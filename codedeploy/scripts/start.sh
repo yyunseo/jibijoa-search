@@ -5,4 +5,4 @@ docker run -d \
   --name backend \
   -p 8000:8000 \
   --env-file /home/ec2-user/backend/.env \
-  <AWS_ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com/backend-api:latest
+  <AWS_ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com/jibijoa-backend:latest
