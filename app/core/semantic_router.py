@@ -1,11 +1,13 @@
 import logging
 import numpy as np
-import os
-from typing import List, Dict
+from typing import Dict, Optional
 from sklearn.metrics.pairwise import cosine_similarity
-from utils import QPOLL_FIELDS, WELCOME_OBJECTIVE_FIELDS, FIELD_NAME_MAP
-from search_helpers import initialize_embeddings
-from mapping_rules import get_field_mapping
+from app.core.embeddings import initialize_embeddings
+from app.constants.mapping import (
+    QPOLL_FIELDS, 
+    WELCOME_OBJECTIVE_FIELDS, 
+)
+from app.utils.common import get_field_mapping
 
 # 로거 설정
 logger = logging.getLogger(__name__)
@@ -26,11 +28,11 @@ class SemanticRouter:
         logger.info("🔄 Semantic Router 초기화 중...")
         self.embeddings = initialize_embeddings()
         
-        # 2. 질문(Field) 리스트업 (utils.py 활용)
+        # 2. 질문(Field) 리스트업
         self.fields = []
         self.descriptions = []
         
-        # Q-Poll 뿐만 아니라 Welcome 데이터(가전, 차량 등)도 검색 대상에 포함!
+        # Q-Poll 뿐만 아니라 Welcome 데이터(가전, 차량 등)도 검색 대상에 포함
         all_target_fields = QPOLL_FIELDS + WELCOME_OBJECTIVE_FIELDS
         
         for field, desc in all_target_fields:
@@ -42,7 +44,7 @@ class SemanticRouter:
         self.initialized = True
         logger.info(f"✅ 총 {len(self.fields)}개 필드(Q-Poll + Welcome) 벡터화 완료")
 
-    def find_closest_field(self, user_intent: str, threshold: float = 0.4) -> Dict:
+    def find_closest_field(self, user_intent: str, threshold: float = 0.4) -> Optional[Dict]:
         """
         사용자 의도(user_intent)와 가장 가까운 질문 필드를 찾습니다.
         1차: 키워드 매칭, 2차: 의미(벡터) 매칭
@@ -54,7 +56,6 @@ class SemanticRouter:
 
         # 1. 키워드 기반 우선 검색
         keyword_match = get_field_mapping(user_intent)
-        # 타입이 qpoll이든 filter든 매칭되면 반환하도록 조건 완화
         if keyword_match and keyword_match.get("field") != "unknown":
             logger.debug(f"  🎯 Semantic Route: '{user_intent}' -> '{keyword_match['description']}' (Keyword Match)")
             return {
@@ -73,10 +74,9 @@ class SemanticRouter:
         # 코사인 유사도 계산
         sims = cosine_similarity([query_vec], self.field_vectors)[0]
         
-        # 상위 3개 점수 로깅
-        top_k_indices = np.argsort(sims)[-3:][::-1]
-        top_scores_log = ", ".join([f"'{self.descriptions[i]}'({sims[i]:.3f})" for i in top_k_indices])
-        logger.debug(f"  (2/2) 📈 상위 유사도 점수: {top_scores_log}")
+        # 상위 점수 로깅 (디버깅용)
+        # best_idx = np.argmax(sims)
+        # ... (기존 로깅 로직 유지 가능)
 
         # 가장 높은 유사도 찾기
         best_idx = np.argmax(sims)
