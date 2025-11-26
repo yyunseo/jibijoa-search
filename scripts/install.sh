@@ -1,7 +1,15 @@
 #!/bin/bash
-echo "Pulling latest docker image..."
+set -e
 
+echo "Pulling docker image..."
+
+# ECR 로그인
 aws ecr get-login-password --region ap-southeast-2 \
-    | docker login --username AWS --password-stdin <AWS_ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com
+    | sudo docker login --username AWS --password-stdin <AWS_ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com
 
-docker pull <AWS_ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com/jibijoa-backend:latest
+sudo docker rmi <AWS_ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com/jibijoa-backend:latest --force 2>/dev/null || true
+
+# 이미지 pull
+sudo docker pull <AWS_ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com/jibijoa-backend:latest
+
+echo "Image pulled successfully."
