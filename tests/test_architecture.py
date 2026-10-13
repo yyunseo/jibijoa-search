@@ -48,6 +48,8 @@ def test_dead_code_removed():
     assert not hasattr(postgres, "log_search_query")
     assert not hasattr(postgres, "get_panels_data_from_db")
     assert not hasattr(VectorRepository, "hybrid_search")
+    # 유일한 호출부(generate_dynamic_insight)가 삭제되면서 함께 도달 불가능해진 모듈
+    assert not (APP / "insights" / "clustering.py").exists()
 
 
 def test_no_panel_data_tracked():
