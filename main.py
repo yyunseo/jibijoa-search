@@ -28,7 +28,7 @@ from insights import (
 )
 from llm import parse_query_intelligent
 from mapping_rules import QPOLL_FIELD_TO_TEXT
-from db import init_db, cleanup_db, get_db_connection_context
+from app.core.postgres import init_db, cleanup_db, get_db_connection_context
 
 logging.basicConfig(
     level=logging.INFO,

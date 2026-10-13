@@ -13,7 +13,7 @@ from llm import generate_stats_summary, generate_demographic_summary
 
 # --- Repository & Helpers ---
 from repository import PanelRepository, VectorRepository 
-from search_helpers import initialize_embeddings 
+from app.core.embeddings import initialize_embeddings 
 from utils import (
     calculate_distribution,
     find_top_category,

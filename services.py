@@ -13,7 +13,7 @@ from insights import (
     get_search_result_overview
 )
 from llm import parse_query_intelligent
-from search_helpers import initialize_embeddings
+from app.core.embeddings import initialize_embeddings
 from search import hybrid_search
 from mapping_rules import (
     QPOLL_FIELD_TO_TEXT, 
@@ -21,10 +21,8 @@ from mapping_rules import (
     VECTOR_CATEGORY_TO_FIELD,
     find_related_fields
 )
-from db import (
-    get_db_connection_context,
-    get_qdrant_client
-)
+from app.core.postgres import get_db_connection_context
+from app.core.qdrant import get_qdrant_client
 from qdrant_client.http.models import Filter, FieldCondition, MatchValue, MatchAny
 from utils import FIELD_NAME_MAP
 

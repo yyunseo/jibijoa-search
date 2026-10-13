@@ -4,7 +4,7 @@ import os
 from typing import List, Dict
 from sklearn.metrics.pairwise import cosine_similarity
 from utils import QPOLL_FIELDS, WELCOME_OBJECTIVE_FIELDS, FIELD_NAME_MAP
-from search_helpers import initialize_embeddings
+from app.core.embeddings import initialize_embeddings
 from mapping_rules import get_field_mapping
 
 # 로거 설정

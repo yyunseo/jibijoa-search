@@ -4,7 +4,8 @@ from typing import List, Dict, Any, Optional, Tuple, Set
 from collections import Counter
 
 from qdrant_client.http.models import Filter, FieldCondition, MatchValue, MatchAny, MatchText
-from db import get_db_connection_context, get_qdrant_client
+from app.core.postgres import get_db_connection_context
+from app.core.qdrant import get_qdrant_client
 from mapping_rules import QPOLL_FIELD_TO_TEXT
 
 # --- PostgreSQL Repository ---

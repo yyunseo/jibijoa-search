@@ -4,20 +4,12 @@ import os
 import logging
 from typing import Dict, List, Optional, Any
 from functools import lru_cache
-from langchain_anthropic import ChatAnthropic
 from langchain_core.messages import SystemMessage, HumanMessage
 from dotenv import load_dotenv
-from settings import settings
+from app.core import llm_client
 
 load_dotenv()
 
-# 1. Claude 클라이언트 설정
-try:
-    # API Key는 환경변수(.env)에서 자동으로 로드됩니다.
-    CLAUDE_CLIENT = ChatAnthropic(model="claude-sonnet-4-5", temperature=0.1, api_key=settings.ANTHROPIC_API_KEY)
-except Exception as e:
-    CLAUDE_CLIENT = None
-    logging.error(f"Anthropic 클라이언트 생성 실패: {e}")
 
 
 # 2. DB 스키마 정보
@@ -102,7 +94,7 @@ Return ONLY the raw JSON.
 @lru_cache(maxsize=256)
 def parse_query_intelligent(query: str) -> Dict[str, Any]:
    """ 쿼리를 지능적으로 파싱하여 구조화된 검색 조건 생성 """ 
-   if CLAUDE_CLIENT is None:
+   if llm_client.CLAUDE_CLIENT is None:
        raise RuntimeError("Claude 클라이언트가 초기화되지 않았습니다.")
    
    logging.info(f"🔄 LLM Parser v2 호출 중: {query}")
@@ -116,7 +108,7 @@ def parse_query_intelligent(query: str) -> Dict[str, Any]:
            HumanMessage(content="Analyze the query and provide structured search conditions in JSON.")
        ]
        
-       response = CLAUDE_CLIENT.invoke(messages)
+       response = llm_client.CLAUDE_CLIENT.invoke(messages)
        text_output = response.content.strip()
        logging.info(f"🤖 Claude LLM 원본 응답:\n---\n{text_output}\n---")
        
@@ -191,7 +183,7 @@ def extract_relevant_columns_via_llm(question: str, all_columns_info: str) -> Li
     """
     질문을 분석하여 통계 분석에 필요한 DB 컬럼명들을 추출합니다.
     """
-    if not CLAUDE_CLIENT: 
+    if not llm_client.CLAUDE_CLIENT: 
         logging.error("Claude Client is not initialized.")
         return []
 
@@ -210,7 +202,7 @@ def extract_relevant_columns_via_llm(question: str, all_columns_info: str) -> Li
     user_prompt = f"Question: {question}"
 
     try:
-        response = CLAUDE_CLIENT.invoke([
+        response = llm_client.CLAUDE_CLIENT.invoke([
             SystemMessage(content=system_prompt),
             HumanMessage(content=user_prompt)
         ])
@@ -230,7 +222,7 @@ def generate_stats_summary(question: str, stats_context: str) -> str:
     """
     계산된 통계 텍스트를 바탕으로 답변을 생성합니다.
     """
-    if not CLAUDE_CLIENT: return "AI 모델이 연결되지 않아 요약을 생성할 수 없습니다."
+    if not llm_client.CLAUDE_CLIENT: return "AI 모델이 연결되지 않아 요약을 생성할 수 없습니다."
 
     system_prompt = """
     당신은 데이터 인사이트 전문가입니다. 
@@ -253,7 +245,7 @@ def generate_stats_summary(question: str, stats_context: str) -> str:
     """
     
     try:
-        response = CLAUDE_CLIENT.invoke([
+        response = llm_client.CLAUDE_CLIENT.invoke([
             SystemMessage(content=system_prompt),
             HumanMessage(content=user_prompt)
         ])
@@ -266,7 +258,7 @@ def generate_demographic_summary(query: str, stats_text: str, total_count: int) 
     """
     통계 데이터를 바탕으로 '인사이트'가 담긴 요약 문장을 생성합니다.
     """
-    if not CLAUDE_CLIENT: return ""
+    if not llm_client.CLAUDE_CLIENT: return ""
 
     system_prompt = """
     당신은 데이터 인사이트 전문가입니다. 
@@ -295,7 +287,7 @@ def generate_demographic_summary(query: str, stats_text: str, total_count: int) 
     """
 
     try:
-        response = CLAUDE_CLIENT.invoke([
+        response = llm_client.CLAUDE_CLIENT.invoke([
             SystemMessage(content=system_prompt),
             HumanMessage(content=user_prompt)
         ])

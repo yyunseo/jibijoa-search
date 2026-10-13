@@ -19,9 +19,9 @@ SYMBOLS = {
 }
 
 PATCH_POINTS = {
-    "qdrant_client_cls": "db:QdrantClient",
-    "pg_pool": "db:_connection_pool",
-    "llm_client": "llm:CLAUDE_CLIENT",
+    "qdrant_client_cls": "app.core.qdrant:QdrantClient",
+    "pg_pool": "app.core.postgres:_connection_pool",
+    "llm_client": "app.core.llm_client:CLAUDE_CLIENT",
 }
 
 CACHE_CLEAR = ["parse_query"]

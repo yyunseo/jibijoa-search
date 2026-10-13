@@ -10,16 +10,15 @@ from llm import parse_query_intelligent
 from semantic_router import router
 from search_helpers import (
     search_welcome_objective, 
-    initialize_embeddings, 
-    filter_negative_conditions, 
-    embed_keywords
+    filter_negative_conditions
 )
+from app.core.embeddings import initialize_embeddings, embed_keywords
 from mapping_rules import (
     QPOLL_FIELD_TO_TEXT, 
     get_negative_patterns,
     VALUE_TRANSLATION_MAP
 )
-from db import get_qdrant_client
+from app.core.qdrant import get_qdrant_client
 
 def normalize_text(text: str) -> str:
     """[New] 텍스트 정규화: 공백, 특수문자 제거 후 비교용 문자열 생성"""

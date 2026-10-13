@@ -10,9 +10,8 @@ from dotenv import load_dotenv
 
 from qdrant_client import QdrantClient
 from qdrant_client.http.models import Filter, FieldCondition, MatchAny, SearchParams
-from langchain_huggingface import HuggingFaceEmbeddings
 from repository import PanelRepository
-from db import get_db_connection_context
+from app.core.postgres import get_db_connection_context
 from mapping_rules import (
     CATEGORY_MAPPING, 
     get_field_mapping,
@@ -297,18 +296,3 @@ def filter_negative_conditions(
         logging.error(f"Negative 필터링 실패: {e}")
         return panel_ids
 
-@lru_cache(maxsize=None)
-def initialize_embeddings():
-    try:
-        return HuggingFaceEmbeddings(model_name="nlpai-lab/KURE-v1", model_kwargs={'device': 'cpu'})
-    except Exception as e:
-        logging.error(f"임베딩 로드 실패: {e}")
-        raise
-
-def embed_keywords(keywords: List[str]) -> List[List[float]]:
-    if not keywords: return []
-    try:
-        return initialize_embeddings().embed_documents(keywords)
-    except Exception as e:
-        logging.error(f"임베딩 실패: {e}")
-        return []

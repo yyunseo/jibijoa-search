@@ -3,11 +3,10 @@ import psycopg2
 import psycopg2.pool
 import logging
 from dotenv import load_dotenv
-from qdrant_client import QdrantClient
 from threading import Lock
 from contextlib import contextmanager
 from typing import List, Dict, Any, Tuple, Optional
-from settings import settings
+from app.core.config import settings
 
 load_dotenv()
 
@@ -96,18 +95,6 @@ def close_connection_pool():
                 logging.info("PostgreSQL Connection Pool이 종료되었습니다.")
 
 
-def get_qdrant_client():
-    """Qdrant 클라이언트를 생성하고 반환합니다."""
-    try:
-        client = QdrantClient(
-            host=settings.QDRANT_HOST,
-            port=settings.QDRANT_PORT,
-            timeout=20.0
-        )
-        return client
-    except Exception as e:
-        logging.error(f"Qdrant 클라이언트 연결 실패: {e}")
-        return None
 
 
 def log_search_query(query: str, results_count: int, user_uid: int = None):
