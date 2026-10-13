@@ -102,3 +102,5 @@ welcome_data.json
 merged_qpoll_data.json
 qpoll_*.json
 !tests/golden/*.json
+.coverage
+.pytest_cache/
