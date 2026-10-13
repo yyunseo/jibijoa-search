@@ -1,11 +1,9 @@
-import os
 import psycopg2
 import psycopg2.pool
 import logging
 from dotenv import load_dotenv
 from threading import Lock
 from contextlib import contextmanager
-from typing import List, Dict, Any, Tuple, Optional
 from app.core.config import settings
 
 load_dotenv()
@@ -97,57 +95,6 @@ def close_connection_pool():
 
 
 
-def log_search_query(query: str, results_count: int, user_uid: int = None):
-    """
-    검색 쿼리와 결과 수를 데이터베이스에 기록합니다.
-    """
-    with get_db_connection_context() as conn:
-        if not conn:
-            return None
-        
-        try:
-            cur = conn.cursor()
-            
-            cur.execute("""
-                SELECT EXISTS (
-                    SELECT FROM information_schema.tables 
-                    WHERE table_name = 'search_log'
-                )
-            """)
-            
-            table_exists = cur.fetchone()[0]
-            
-            if not table_exists:
-                logging.warning("search_log 테이블이 없어 로그 기록을 건너뜁니다.")
-                cur.close()
-                return None
-            
-            cur.execute(
-                """
-                INSERT INTO search_log (query, results_count, uid, created_at) 
-                VALUES (%s, %s, %s, NOW()) 
-                RETURNING id
-                """,
-                (query, results_count, user_uid)
-            )
-            
-            log_id = cur.fetchone()[0]
-            conn.commit()
-            cur.close()
-            
-            return log_id
-            
-        except psycopg2.errors.InsufficientPrivilege:
-            logging.warning("search_log 테이블에 대한 권한이 없어 로그 기록을 건너뜁니다.")
-            if conn:
-                conn.rollback()
-            return None
-            
-        except Exception as e:
-            logging.warning(f"검색 로그 기록 중 예외 발생: {e}")
-            if conn:
-                conn.rollback()
-            return None
 
 def init_db():
     """애플리케이션 시작 시 Connection Pool을 초기화합니다."""
@@ -164,43 +111,3 @@ def cleanup_db():
     """애플리케이션 종료 시 Connection Pool을 정리합니다."""
     logging.info("DB 리소스 정리 중...")
     close_connection_pool()
-
-def get_panels_data_from_db(panel_id_list: List[str]) -> List[Dict]:
-    """
-    panel_id 리스트로부터 패널 데이터 조회 (Connection Pool 사용)
-    """
-    if not panel_id_list:
-        return []
-    
-    panels_data = []
-    try:
-        with get_db_connection_context() as conn:
-            if not conn:
-                return []
-            cur = conn.cursor()
-
-            cur.execute(
-                """
-                WITH id_order (panel_id, ordering) AS (
-                    SELECT * FROM unnest(%s::text[], %s::int[])
-                )
-                SELECT t.panel_id, t.structured_data
-                FROM welcome_meta2 t
-                JOIN id_order o ON t.panel_id = o.panel_id
-                ORDER BY o.ordering;
-                """,
-                (panel_id_list, list(range(len(panel_id_list))))
-            )
-            rows = cur.fetchall()
-            
-            for panel_id, structured_data in rows:
-                if isinstance(structured_data, dict):
-                    panel = {'panel_id': panel_id}
-                    panel.update(structured_data)
-                    panels_data.append(panel)
-            
-            cur.close()
-        return panels_data
-    except Exception as e:
-        logging.error(f"패널 데이터 조회 실패: {e}", exc_info=True)
-        return []

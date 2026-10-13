@@ -2,7 +2,9 @@ import logging
 from typing import Dict, List
 
 import pandas as pd
+from langchain_core.messages import HumanMessage, SystemMessage
 
+from app.core import llm_client
 from app.panels.age import get_age_group
 from app.panels.fields import (
     FIELD_NAME_MAP,
@@ -11,9 +13,6 @@ from app.panels.fields import (
 from app.panels.repository import PanelRepository
 from app.query.field_matching import find_target_columns_dynamic
 
-from langchain_core.messages import HumanMessage, SystemMessage
-
-from app.core import llm_client
 
 
 def calculate_column_stats(df: pd.DataFrame, columns: List[str]) -> str:

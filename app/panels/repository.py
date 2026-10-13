@@ -1,12 +1,9 @@
 import logging
-import os
 from typing import List, Dict, Any, Optional, Tuple, Set
-from collections import Counter
 
-from qdrant_client.http.models import Filter, FieldCondition, MatchValue, MatchAny, MatchText
+from qdrant_client.http.models import Filter, FieldCondition, MatchValue, MatchAny
 from app.core.postgres import get_db_connection_context
 from app.core.qdrant import get_qdrant_client
-from app.panels.fields import QPOLL_FIELD_TO_TEXT
 
 # --- PostgreSQL Repository ---
 
@@ -164,20 +161,3 @@ class VectorRepository:
         """특정 질문에 대한 모든 패널의 응답 조회 (통계용)"""
         query_filter = Filter(must=[FieldCondition(key="question", match=MatchValue(value=question_text))])
         return VectorRepository._scroll_all("qpoll_vectors_v2", query_filter)
-
-    @staticmethod
-    def hybrid_search(collection_name: str, query_vector: List[float], query_filter: Optional[Filter] = None, limit: int = 100) -> List[Any]:
-        """벡터 검색 수행"""
-        client = get_qdrant_client()
-        if not client: return []
-        try:
-            return client.search(
-                collection_name=collection_name,
-                query_vector=query_vector,
-                query_filter=query_filter,
-                limit=limit,
-                with_payload=True
-            )
-        except Exception as e:
-            logging.error(f"Qdrant Search 실패: {e}")
-            return []

@@ -1,9 +1,8 @@
 import logging
 import numpy as np
-import os
-from typing import List, Dict
+from typing import Dict
 from sklearn.metrics.pairwise import cosine_similarity
-from app.panels.fields import QPOLL_FIELDS, WELCOME_OBJECTIVE_FIELDS, FIELD_NAME_MAP
+from app.panels.fields import QPOLL_FIELDS, WELCOME_OBJECTIVE_FIELDS
 from app.core.embeddings import initialize_embeddings
 from app.query.field_matching import get_field_mapping
 
