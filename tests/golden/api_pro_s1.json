@@ -1,0 +1,228 @@
+{
+  "body": {
+    "charts": [
+      {
+        "chart_data": [
+          {
+            "label": "가족 수",
+            "values": {
+              "1인 가구": 50.0,
+              "3명": 50.0
+            }
+          }
+        ],
+        "description": "50.0%가 '3명'입니다.",
+        "ratio": "50.0%",
+        "topic": "가족 수 분포"
+      },
+      {
+        "chart_data": [
+          {
+            "label": "결혼 여부",
+            "values": {
+              "기혼": 50.0,
+              "미혼": 50.0
+            }
+          }
+        ],
+        "description": "50.0%가 '기혼'입니다.",
+        "ratio": "50.0%",
+        "topic": "결혼 여부 분포"
+      },
+      {
+        "chart_data": [
+          {
+            "label": "세부 지역 분포",
+            "values": {
+              "강남구": 50.0,
+              "송파구": 50.0
+            }
+          }
+        ],
+        "description": "검색 결과: 50.0%가 '송파구'입니다.",
+        "field": "region_minor",
+        "ratio": "50.0%",
+        "topic": "세부 지역 분포 분포"
+      },
+      {
+        "chart_data": [
+          {
+            "label": "직업별 흡연 여부",
+            "values": {
+              "경영관리직": {
+                "일반 담배": 100.0
+              },
+              "사무직": {
+                "일반 담배": 100.0
+              }
+            }
+          }
+        ],
+        "chart_type": "crosstab",
+        "description": "'직업'에 따른 주요 '흡연 여부' 분포입니다.",
+        "fields": [
+          "job_title_raw",
+          "smoking_experience"
+        ],
+        "topic": "직업별 흡연 여부 분포"
+      },
+      {
+        "chart_data": [
+          {
+            "label": "흡연 여부",
+            "values": {
+              "일반 담배": 100.0
+            }
+          }
+        ],
+        "description": "검색 결과: 100.0%가 '일반 담배'입니다.",
+        "field": "smoking_experience",
+        "ratio": "100.0%",
+        "topic": "흡연 여부 분포"
+      }
+    ],
+    "classification": {
+      "demographic_filters": {
+        "age_range": [
+          20,
+          29
+        ],
+        "gender": [
+          "남성"
+        ],
+        "region_major": [
+          "서울"
+        ]
+      },
+      "exclude_conditions": [],
+      "limit": 30,
+      "logic_structure": {
+        "children": [],
+        "operator": "AND"
+      },
+      "query_intent": {},
+      "search_strategy_recommendation": {
+        "strategy": "balanced",
+        "use_collections": [
+          "welcome_subjective_vectors",
+          "qpoll_vectors_v2"
+        ]
+      },
+      "semantic_conditions": [
+        {
+          "expanded_queries": [
+            "담배를 피운다"
+          ],
+          "is_negative": false,
+          "original_keyword": "흡연"
+        }
+      ],
+      "target_field": "smoking_experience"
+    },
+    "display_fields": [
+      {
+        "field": "smoking_experience",
+        "label": "흡연 여부"
+      },
+      {
+        "field": "e_cigarette_experience",
+        "label": "전자 담배 이용 경험"
+      },
+      {
+        "field": "region_major",
+        "label": "거주 지역"
+      },
+      {
+        "field": "smoking_brand",
+        "label": "담배 종류"
+      },
+      {
+        "field": "gender",
+        "label": "성별"
+      },
+      {
+        "field": "birth_year",
+        "label": "연령대"
+      }
+    ],
+    "mode": "pro",
+    "query": "서울 20대 남성 흡연자 30명",
+    "search_summary": "요약-f79b7b7a99e0",
+    "tableData": [
+      {
+        "birth_year": "1975",
+        "e_cigarette_experience": "-",
+        "gender": "남성",
+        "panel_id": "p05",
+        "region_major": "서울",
+        "smoking_brand": "-",
+        "smoking_experience": "일반 담배"
+      },
+      {
+        "birth_year": "2001",
+        "e_cigarette_experience": "-",
+        "gender": "남성",
+        "panel_id": "p01",
+        "region_major": "서울",
+        "smoking_brand": "-",
+        "smoking_experience": "일반 담배"
+      }
+    ],
+    "total_count": 2
+  },
+  "prompts": [
+    "189e176274ea",
+    "f79b7b7a99e0"
+  ],
+  "qdrant": [],
+  "sql": [
+    {
+      "params": [
+        "서울",
+        1997,
+        2006,
+        "M",
+        "%일반%",
+        "%전자%",
+        "%기타%",
+        "%피우고%",
+        "%피웠%",
+        "%흡연%",
+        "%연초%",
+        "%궐련%"
+      ],
+      "sql": "SELECT panel_id FROM welcome_meta2 WHERE structured_data->>'region_major' IN (%s) AND (structured_data->>'birth_year')::int BETWEEN %s AND %s AND structured_data->>'gender' IN (%s) AND (structured_data->>'smoking_experience' ILIKE %s OR structured_data->>'smoking_experience' ILIKE %s OR structured_data->>'smoking_experience' ILIKE %s OR structured_data->>'smoking_experience' ILIKE %s OR structured_data->>'smoking_experience' ILIKE %s OR structured_data->>'smoking_experience' ILIKE %s OR structured_data->>'smoking_experience' ILIKE %s OR structured_data->>'smoking_experience' ILIKE %s) AND structured_data->>'smoking_experience' !~ '피우지|않음|없음|비흡연|금연|안\\s*피움'"
+    },
+    {
+      "params": [
+        [
+          "p05",
+          "p01"
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "sql": "WITH id_order (panel_id, ordering) AS ( SELECT * FROM unnest(%s::text[], %s::int[]) ) SELECT t.panel_id, t.structured_data FROM welcome_meta2 t JOIN id_order o ON t.panel_id = o.panel_id ORDER BY o.ordering;"
+    },
+    {
+      "params": [
+        [
+          "p05",
+          "p01"
+        ]
+      ],
+      "sql": "SELECT structured_data FROM welcome_meta2 WHERE panel_id = ANY(%s)"
+    },
+    {
+      "params": [
+        [
+          "p05",
+          "p01"
+        ]
+      ],
+      "sql": "SELECT structured_data FROM welcome_meta2 WHERE panel_id = ANY(%s)"
+    }
+  ]
+}

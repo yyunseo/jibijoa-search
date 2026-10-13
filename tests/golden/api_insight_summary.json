@@ -1,0 +1,14 @@
+{
+  "body": {
+    "summary": "요약-8e87f31ce3e1",
+    "used_fields": [
+      "gender",
+      "income_household_monthly",
+      "income_personal_monthly"
+    ]
+  },
+  "prompts": [
+    "b7b80ea19f32",
+    "8e87f31ce3e1"
+  ]
+}

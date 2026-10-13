@@ -1,0 +1,11 @@
+{
+  "health": {
+    "database": "ok",
+    "status": "healthy"
+  },
+  "root": {
+    "service": "Multi-Table Hybrid Search & Analysis API",
+    "status": "running",
+    "version": "3.0 (Refactored)"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "body": {
+    "detail": "Claude 응답 파싱 실패: Expecting value"
+  },
+  "status": 500
+}

@@ -1,0 +1,43 @@
+{
+  "body": {
+    "classification": {
+      "demographic_filters": {
+        "age_range": [
+          20,
+          29
+        ],
+        "gender": [
+          "남성"
+        ],
+        "region_major": [
+          "서울"
+        ]
+      },
+      "exclude_conditions": [],
+      "limit": 30,
+      "logic_structure": {
+        "children": [],
+        "operator": "AND"
+      },
+      "query_intent": {},
+      "search_strategy_recommendation": {
+        "strategy": "balanced",
+        "use_collections": [
+          "welcome_subjective_vectors",
+          "qpoll_vectors_v2"
+        ]
+      },
+      "semantic_conditions": [
+        {
+          "expanded_queries": [
+            "담배를 피운다"
+          ],
+          "is_negative": false,
+          "original_keyword": "흡연"
+        }
+      ]
+    },
+    "query": "서울 20대 남성 흡연자 30명"
+  },
+  "status": 200
+}

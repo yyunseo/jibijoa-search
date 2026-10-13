@@ -1,0 +1,27 @@
+{
+  "missing": {
+    "detail": "패널 정보를 찾을 수 없습니다."
+  },
+  "ok": {
+    "birth_year": 2001,
+    "car_ownership": "있음",
+    "children_count": 0,
+    "education_level": "대학교 졸업",
+    "family_size": "1인 가구",
+    "gender": "남성",
+    "income_household_monthly": "월 300~399만원",
+    "income_personal_monthly": "월 300~399만원",
+    "job_title_raw": "사무직",
+    "marital_status": "미혼",
+    "ott_count": "현재 OTT서비스를 2개 이용 중이다.",
+    "panel_id": "p01",
+    "pet_experience": "반려동물을 키우고 있다.",
+    "qpoll_응답_개수": 3,
+    "region_major": "서울",
+    "region_minor": "강남구",
+    "smoking_experience": [
+      "일반 담배"
+    ],
+    "stress_relief_method": "스트레스를 해소하는데 주로 사용하는 방법은 운동이다."
+  }
+}

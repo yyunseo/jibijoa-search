@@ -1,0 +1,214 @@
+{
+  "body": {
+    "classification": {
+      "demographic_filters": {
+        "age_range": [
+          20,
+          39
+        ],
+        "region_major": [
+          "서울",
+          "경기"
+        ]
+      },
+      "exclude_conditions": [],
+      "limit": 30,
+      "logic_structure": {
+        "children": [],
+        "operator": "AND"
+      },
+      "query_intent": {},
+      "search_strategy_recommendation": {
+        "strategy": "balanced",
+        "use_collections": [
+          "welcome_subjective_vectors",
+          "qpoll_vectors_v2"
+        ]
+      },
+      "semantic_conditions": [
+        {
+          "expanded_queries": [
+            "OTT 서비스를 이용한다"
+          ],
+          "is_negative": false,
+          "original_keyword": "OTT"
+        }
+      ],
+      "target_field": "ott_count"
+    },
+    "display_fields": [
+      {
+        "field": "ott_count",
+        "label": "여러분이 현재 이용 중인 OTT 서비스는 몇 개인가요?"
+      },
+      {
+        "field": "education_level",
+        "label": "최종학력"
+      },
+      {
+        "field": "region_major",
+        "label": "거주 지역"
+      },
+      {
+        "field": "income_household_monthly",
+        "label": "월소득(가구)"
+      },
+      {
+        "field": "job_title_raw",
+        "label": "직업"
+      },
+      {
+        "field": "gender",
+        "label": "성별"
+      },
+      {
+        "field": "birth_year",
+        "label": "연령대"
+      }
+    ],
+    "effective_search_mode": "quota",
+    "mode": "lite",
+    "query": "서울 경기 OTT 이용하는 젊은층 30명",
+    "tableData": [
+      {
+        "birth_year": "1990",
+        "education_level": "대학교 졸업",
+        "gender": "여성",
+        "income_household_monthly": "월 300~399만원",
+        "job_title_raw": "사무직",
+        "ott_count": "2개",
+        "panel_id": "p08",
+        "region_major": "서울"
+      },
+      {
+        "birth_year": "1998",
+        "education_level": "대학교 졸업",
+        "gender": "남성",
+        "income_household_monthly": "월 500~599만원",
+        "job_title_raw": "기술직",
+        "ott_count": "1개",
+        "panel_id": "p03",
+        "region_major": "경기"
+      },
+      {
+        "birth_year": "1999",
+        "education_level": "대학교 졸업",
+        "gender": "여성",
+        "income_household_monthly": "월 400~499만원",
+        "job_title_raw": "전문직",
+        "ott_count": "3개",
+        "panel_id": "p02",
+        "region_major": "서울"
+      },
+      {
+        "birth_year": "2002",
+        "education_level": "대학교 졸업",
+        "gender": "여성",
+        "income_household_monthly": "월 100만원 미만",
+        "job_title_raw": "학생",
+        "ott_count": "1개",
+        "panel_id": "p06",
+        "region_major": "경기"
+      },
+      {
+        "birth_year": "2001",
+        "education_level": "대학교 졸업",
+        "gender": "남성",
+        "income_household_monthly": "월 300~399만원",
+        "job_title_raw": "사무직",
+        "ott_count": "2개",
+        "panel_id": "p01",
+        "region_major": "서울"
+      }
+    ],
+    "total_count": 5
+  },
+  "qdrant": [
+    {
+      "collection": "qpoll_vectors_v2",
+      "filter": [
+        {
+          "key": "panel_id",
+          "match": "MatchAny",
+          "value": {
+            "count": 5,
+            "values": [
+              "p01",
+              "p02",
+              "p03",
+              "p06",
+              "p08"
+            ]
+          }
+        }
+      ],
+      "limit": 2000,
+      "offset": null,
+      "op": "scroll",
+      "with_vectors": true
+    },
+    {
+      "collection": "qpoll_vectors_v2",
+      "filter": [
+        {
+          "key": "panel_id",
+          "match": "MatchAny",
+          "value": {
+            "count": 5,
+            "values": [
+              "p01",
+              "p02",
+              "p03",
+              "p06",
+              "p08"
+            ]
+          }
+        },
+        {
+          "key": "question",
+          "match": "MatchAny",
+          "value": {
+            "count": 1,
+            "values": [
+              "여러분이 현재 이용 중인 OTT 서비스는 몇 개인가요?"
+            ]
+          }
+        }
+      ],
+      "limit": 1000,
+      "offset": null,
+      "op": "scroll",
+      "with_vectors": false
+    }
+  ],
+  "sql": [
+    {
+      "params": [
+        "서울",
+        "경기",
+        1987,
+        2006
+      ],
+      "sql": "SELECT panel_id FROM welcome_meta2 WHERE structured_data->>'region_major' IN (%s,%s) AND (structured_data->>'birth_year')::int BETWEEN %s AND %s"
+    },
+    {
+      "params": [
+        [
+          "p08",
+          "p03",
+          "p02",
+          "p06",
+          "p01"
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      ],
+      "sql": "WITH id_order (panel_id, ordering) AS ( SELECT * FROM unnest(%s::text[], %s::int[]) ) SELECT t.panel_id, t.structured_data FROM welcome_meta2 t JOIN id_order o ON t.panel_id = o.panel_id ORDER BY o.ordering;"
+    }
+  ]
+}
