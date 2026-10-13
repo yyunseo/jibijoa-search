@@ -1,0 +1,5 @@
+# 테스트 전용. torch/transformers/sentence-transformers/langchain-huggingface는
+# 테스트에서 가짜 임베딩으로 대체하므로 설치하지 않는다.
+pytest==8.3.3
+pytest-cov==5.0.0
+freezegun==1.5.1
