@@ -14,17 +14,12 @@ services:
       
     restart: always
 
+    env_file:
+      - .env
     environment:
-      - APP_SECRET_CONFIG_NAME="prod/backend/secrets"
-      - DEFAULT_REGION="ap-southeast-2"
-      - DB_HOST="<RDS_ENDPOINT>"
-      - DB_NAME="project_db"
-      - DB_USER="backend_user"
-      - PORT="5432"
-      - QDRANT_HOST="<REDACTED_IP>"
-      - QDRANT_PORT="6333"
-      - QDRANT_COLLECTION_WELCOME_NAME="welcome_subjective_vectors"
-      - QDRANT_COLLECTION_QPOLL_NAME="qpoll_vectors_v2"
+      - DEFAULT_REGION=${AWS_REGION:-ap-southeast-2}
+      - QDRANT_COLLECTION_WELCOME_NAME=welcome_subjective_vectors
+      - QDRANT_COLLECTION_QPOLL_NAME=qpoll_vectors_v2
 
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]

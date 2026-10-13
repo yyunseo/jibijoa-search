@@ -1,4 +1,6 @@
 #!/bin/bash
+: "${AWS_ACCOUNT_ID:?AWS_ACCOUNT_ID is required}" "${AWS_REGION:=ap-southeast-2}" "${ECR_REPO_NAME:=jibijoa-backend}"
+: "${DB_HOST:?DB_HOST is required}" "${QDRANT_HOST:?QDRANT_HOST is required}" "${APP_SECRET_CONFIG_NAME:=prod/backend/secrets}"
 set -e
 echo "Starting docker container..."
 
@@ -12,19 +14,19 @@ sudo docker run -d \
   --name backend \
   -p 8000:8000 \
   --restart always \
-  -e APP_SECRET_CONFIG_NAME="prod/backend/secrets" \
-  -e DEFAULT_REGION="ap-southeast-2" \
-  -e DB_HOST="<RDS_ENDPOINT>" \
+  -e APP_SECRET_CONFIG_NAME="${APP_SECRET_CONFIG_NAME}" \
+  -e DEFAULT_REGION="${AWS_REGION}" \
+  -e DB_HOST="${DB_HOST}" \
   -e DB_NAME="project_db" \
   -e DB_USER="backend_user" \
   -e PORT="5432" \
-  -e QDRANT_HOST="<REDACTED_IP>" \
+  -e QDRANT_HOST="${QDRANT_HOST}" \
   -e QDRANT_PORT="6333" \
   -e QDRANT_COLLECTION_WELCOME_NAME="welcome_subjective_vectors" \
   -e QDRANT_COLLECTION_QPOLL_NAME="qpoll_vectors_v2" \
   -e TRANSFORMERS_CACHE="/home/appuser/.cache/huggingface" \
   -e HF_HOME="/home/appuser/.cache/huggingface" \
-  <AWS_ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com/jibijoa-backend:latest
+  ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:latest
 
 echo "Container started successfully."
 

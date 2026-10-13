@@ -1,5 +1,6 @@
 # main.py
 import logging
+import os
 import time
 import asyncio
 from fastapi import FastAPI, HTTPException
@@ -40,11 +41,9 @@ app = FastAPI(title="Multi-Table Hybrid Search API v3 (Refactored)")
 
 # --- CORS Middleware ---
 origins = [
-    "http://localhost:5173",
-    "http://localhost:3000",
-    "https://<AMPLIFY_DOMAIN>",
-    "https://jibijoa.cloud",
-    "https://www.jibijoa.cloud"
+    o.strip()
+    for o in os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:3000").split(",")
+    if o.strip()
 ]
 app.add_middleware(
     CORSMiddleware,

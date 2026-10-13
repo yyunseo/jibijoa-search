@@ -3,9 +3,9 @@ phases:
   pre_build:
     commands:
       # 환경 변수 정의
-      - export ECR_REPO_NAME=jibijoa-backend
-      - export AWS_ACCOUNT_ID=<AWS_ACCOUNT_ID>
-      - export AWS_REGION=ap-southeast-2
+      # AWS_ACCOUNT_ID는 CodeBuild 프로젝트 환경변수로 주입한다
+      - export ECR_REPO_NAME=${ECR_REPO_NAME:-jibijoa-backend}
+      - export AWS_REGION=${AWS_REGION:-ap-southeast-2}
       - export ECR_URI=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}
       
       # COMMIT_HASH 추출
