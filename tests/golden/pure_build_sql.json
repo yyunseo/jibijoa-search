@@ -1,0 +1,417 @@
+[
+  {
+    "filters": [
+      {
+        "field": "drinking_experience",
+        "operator": "not_null",
+        "value": "check"
+      }
+    ],
+    "result": {
+      "ok": [
+        " WHERE ((structured_data->>'drinking_experience' IS NOT NULL AND structured_data->>'drinking_experience' != 'NaN') AND structured_data->>'drinking_experience' !~ '마시지|않음|없음|비음주|금주|안\\s*마심|전혀')",
+        []
+      ]
+    }
+  },
+  {
+    "filters": [
+      {
+        "field": "smoking_experience",
+        "operator": "not_null",
+        "value": "check"
+      }
+    ],
+    "result": {
+      "ok": [
+        " WHERE ((structured_data->>'smoking_experience' IS NOT NULL AND structured_data->>'smoking_experience' != 'NaN') AND structured_data->>'smoking_experience' !~ '피우지|않음|없음|비흡연|금연|안\\s*피움')",
+        []
+      ]
+    }
+  },
+  {
+    "filters": [
+      {
+        "field": "ott_count",
+        "operator": "not_null",
+        "value": "check"
+      }
+    ],
+    "result": {
+      "ok": [
+        " WHERE ((structured_data->>'ott_count' IS NOT NULL AND structured_data->>'ott_count' != 'NaN') AND structured_data->>'ott_count' !~ '0개|안\\s*함|없음|이용\\s*안|보지\\s*않음')",
+        []
+      ]
+    }
+  },
+  {
+    "filters": [
+      {
+        "field": "children_count",
+        "operator": "not_null",
+        "value": "check"
+      }
+    ],
+    "result": {
+      "ok": [
+        " WHERE ((structured_data->>'children_count' IS NOT NULL AND structured_data->>'children_count' != 'NaN') AND structured_data->>'children_count' NOT IN ('0', '0명') AND structured_data->>'children_count' !~ '없음')",
+        []
+      ]
+    }
+  },
+  {
+    "filters": [
+      {
+        "field": "car_ownership",
+        "operator": "not_null",
+        "value": "check"
+      }
+    ],
+    "result": {
+      "ok": [
+        " WHERE ((structured_data->>'car_ownership' IS NOT NULL AND structured_data->>'car_ownership' != 'NaN') AND structured_data->>'car_ownership' !~ '없음|비흡연|해당사항|피우지|금연')",
+        []
+      ]
+    }
+  },
+  {
+    "filters": [
+      {
+        "field": "age",
+        "operator": "between",
+        "value": [
+          20,
+          29
+        ]
+      }
+    ],
+    "result": {
+      "ok": [
+        " WHERE (structured_data->>'birth_year')::int BETWEEN %s AND %s",
+        [
+          1997,
+          2006
+        ]
+      ]
+    }
+  },
+  {
+    "filters": [
+      {
+        "field": "gender",
+        "operator": "in",
+        "value": [
+          "남성"
+        ]
+      }
+    ],
+    "result": {
+      "ok": [
+        " WHERE structured_data->>'gender' IN (%s)",
+        [
+          "M"
+        ]
+      ]
+    }
+  },
+  {
+    "filters": [
+      {
+        "field": "region_major",
+        "operator": "in",
+        "value": [
+          "서울",
+          "경기"
+        ]
+      }
+    ],
+    "result": {
+      "ok": [
+        " WHERE structured_data->>'region_major' IN (%s,%s)",
+        [
+          "서울",
+          "경기"
+        ]
+      ]
+    }
+  },
+  {
+    "filters": [
+      {
+        "field": "job_title_raw",
+        "operator": "in",
+        "value": [
+          "직장인"
+        ]
+      }
+    ],
+    "result": {
+      "ok": [
+        " WHERE (structured_data->>'job_title_raw' ILIKE %s OR structured_data->>'job_title_raw' ILIKE %s OR structured_data->>'job_title_raw' ILIKE %s OR structured_data->>'job_title_raw' ILIKE %s OR structured_data->>'job_title_raw' ILIKE %s OR structured_data->>'job_title_raw' ILIKE %s OR structured_data->>'job_title_raw' ILIKE %s)",
+        [
+          "%사무직%",
+          "%전문직%",
+          "%경영관리직%",
+          "%생산노무직%",
+          "%서비스직%",
+          "%판매직%",
+          "%기술직%"
+        ]
+      ]
+    }
+  },
+  {
+    "filters": [
+      {
+        "field": "smoking_experience",
+        "operator": "in",
+        "value": [
+          "흡연"
+        ]
+      }
+    ],
+    "result": {
+      "ok": [
+        " WHERE (structured_data->>'smoking_experience' ILIKE %s OR structured_data->>'smoking_experience' ILIKE %s OR structured_data->>'smoking_experience' ILIKE %s OR structured_data->>'smoking_experience' ILIKE %s OR structured_data->>'smoking_experience' ILIKE %s OR structured_data->>'smoking_experience' ILIKE %s OR structured_data->>'smoking_experience' ILIKE %s OR structured_data->>'smoking_experience' ILIKE %s) AND structured_data->>'smoking_experience' !~ '피우지|않음|없음|비흡연|금연|안\\s*피움'",
+        [
+          "%일반%",
+          "%전자%",
+          "%기타%",
+          "%피우고%",
+          "%피웠%",
+          "%흡연%",
+          "%연초%",
+          "%궐련%"
+        ]
+      ]
+    }
+  },
+  {
+    "filters": [
+      {
+        "field": "drinking_experience",
+        "operator": "in",
+        "value": [
+          "있음"
+        ]
+      }
+    ],
+    "result": {
+      "ok": [
+        " WHERE (structured_data->>'drinking_experience' ILIKE %s OR structured_data->>'drinking_experience' ILIKE %s OR structured_data->>'drinking_experience' ILIKE %s OR structured_data->>'drinking_experience' ILIKE %s OR structured_data->>'drinking_experience' ILIKE %s OR structured_data->>'drinking_experience' ILIKE %s OR structured_data->>'drinking_experience' ILIKE %s OR structured_data->>'drinking_experience' ILIKE %s OR structured_data->>'drinking_experience' ILIKE %s OR structured_data->>'drinking_experience' ILIKE %s OR structured_data->>'drinking_experience' ILIKE %s) AND structured_data->>'drinking_experience' !~ '마시지|않음|없음|비음주|금주|안\\s*마심|전혀'",
+        [
+          "%소주%",
+          "%맥주%",
+          "%와인%",
+          "%막걸리%",
+          "%위스키%",
+          "%양주%",
+          "%사케%",
+          "%과일칵테일주%",
+          "%저도주%",
+          "%즐겨%",
+          "%마신다%"
+        ]
+      ]
+    }
+  },
+  {
+    "filters": [
+      {
+        "field": "income_household_monthly",
+        "operator": "gte",
+        "value": 5000000
+      }
+    ],
+    "result": {
+      "ok": [
+        " WHERE structured_data->>'income_household_monthly' IN (%s,%s,%s)",
+        [
+          "월 500~599만원",
+          "월 600~699만원",
+          "월 700만원 이상"
+        ]
+      ]
+    }
+  },
+  {
+    "filters": [
+      {
+        "field": "income_personal_monthly",
+        "operator": "between",
+        "value": [
+          2000000,
+          3500000
+        ]
+      }
+    ],
+    "result": {
+      "ok": [
+        " WHERE structured_data->>'income_personal_monthly' IN (%s,%s)",
+        [
+          "월 200~299만원",
+          "월 300~399만원"
+        ]
+      ]
+    }
+  },
+  {
+    "filters": [
+      {
+        "field": "income_personal_monthly",
+        "operator": "lte",
+        "value": 50
+      }
+    ],
+    "result": {
+      "ok": [
+        " WHERE structured_data->>'income_personal_monthly' IN (%s)",
+        [
+          "월 100만원 미만"
+        ]
+      ]
+    }
+  },
+  {
+    "filters": [
+      {
+        "field": "children_count",
+        "operator": "gte",
+        "value": 1
+      }
+    ],
+    "result": {
+      "ok": [
+        " WHERE (structured_data->>'children_count')::numeric >= %s",
+        [
+          1
+        ]
+      ]
+    }
+  },
+  {
+    "filters": [
+      {
+        "field": "family_size",
+        "operator": "in",
+        "value": [
+          "1",
+          "2"
+        ]
+      }
+    ],
+    "result": {
+      "ok": [
+        " WHERE (structured_data->>'family_size' ~ %s OR structured_data->>'family_size' ~ %s)",
+        [
+          "^1([^0-9]|$)",
+          "^2([^0-9]|$)"
+        ]
+      ]
+    }
+  },
+  {
+    "filters": [
+      {
+        "field": "family_size",
+        "operator": "eq",
+        "value": "3"
+      }
+    ],
+    "result": {
+      "ok": [
+        " WHERE structured_data->>'family_size' ~ %s",
+        [
+          "^3([^0-9]|$)"
+        ]
+      ]
+    }
+  },
+  {
+    "filters": [
+      {
+        "field": "marital_status",
+        "operator": "eq",
+        "value": "미혼"
+      }
+    ],
+    "result": {
+      "ok": [
+        " WHERE structured_data->>'marital_status' = %s",
+        [
+          "미혼"
+        ]
+      ]
+    }
+  },
+  {
+    "filters": [
+      {
+        "field": "education_level",
+        "operator": "like",
+        "value": "대학"
+      }
+    ],
+    "result": {
+      "ok": [
+        " WHERE structured_data->>'education_level' ILIKE %s",
+        [
+          "%대학%"
+        ]
+      ]
+    }
+  },
+  {
+    "filters": [
+      {
+        "field": "gender",
+        "operator": "in",
+        "value": [
+          "여성"
+        ]
+      },
+      {
+        "field": "age",
+        "operator": "between",
+        "value": [
+          30,
+          39
+        ]
+      }
+    ],
+    "result": {
+      "ok": [
+        " WHERE structured_data->>'gender' IN (%s) AND (structured_data->>'birth_year')::int BETWEEN %s AND %s",
+        [
+          "F",
+          1987,
+          1996
+        ]
+      ]
+    }
+  },
+  {
+    "filters": [],
+    "result": {
+      "ok": [
+        "",
+        []
+      ]
+    }
+  },
+  {
+    "filters": [
+      {
+        "field": null,
+        "operator": "eq",
+        "value": "x"
+      }
+    ],
+    "result": {
+      "ok": [
+        "",
+        []
+      ]
+    }
+  }
+]

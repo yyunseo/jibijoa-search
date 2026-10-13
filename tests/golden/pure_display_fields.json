@@ -1,0 +1,175 @@
+[
+  {
+    "cls": {
+      "demographic_filters": {
+        "region_major": [
+          "서울"
+        ]
+      },
+      "target_field": "ott_count"
+    },
+    "out": [
+      {
+        "field": "ott_count",
+        "label": "여러분이 현재 이용 중인 OTT 서비스는 몇 개인가요?"
+      },
+      {
+        "field": "education_level",
+        "label": "최종학력"
+      },
+      {
+        "field": "region_major",
+        "label": "거주 지역"
+      },
+      {
+        "field": "income_household_monthly",
+        "label": "월소득(가구)"
+      },
+      {
+        "field": "job_title_raw",
+        "label": "직업"
+      },
+      {
+        "field": "gender",
+        "label": "성별"
+      },
+      {
+        "field": "birth_year",
+        "label": "연령대"
+      }
+    ],
+    "q": "서울 OTT 이용자"
+  },
+  {
+    "cls": {
+      "demographic_filters": {
+        "gender": [
+          "남성"
+        ]
+      },
+      "target_field": "smoking_experience"
+    },
+    "out": [
+      {
+        "field": "smoking_experience",
+        "label": "흡연 여부"
+      },
+      {
+        "field": "e_cigarette_experience",
+        "label": "전자 담배 이용 경험"
+      },
+      {
+        "field": "region_major",
+        "label": "거주 지역"
+      },
+      {
+        "field": "smoking_brand",
+        "label": "담배 종류"
+      },
+      {
+        "field": "gender",
+        "label": "성별"
+      },
+      {
+        "field": "birth_year",
+        "label": "연령대"
+      }
+    ],
+    "q": "남성 흡연자"
+  },
+  {
+    "cls": {
+      "target_field": "unknown"
+    },
+    "out": [
+      {
+        "field": "car_model_raw",
+        "label": "차량 모델명"
+      },
+      {
+        "field": "region_major",
+        "label": "거주 지역"
+      },
+      {
+        "field": "gender",
+        "label": "성별"
+      },
+      {
+        "field": "birth_year",
+        "label": "연령대"
+      },
+      {
+        "field": "car_manufacturer_raw",
+        "label": "차량 제조사"
+      }
+    ],
+    "q": "자동차 있는 사람"
+  },
+  {
+    "cls": {
+      "structured_filters": [
+        {
+          "field": "income_household_monthly"
+        }
+      ],
+      "target_field": null
+    },
+    "out": [
+      {
+        "field": "overseas_travel_pref",
+        "label": "해외여행 선호지"
+      },
+      {
+        "field": "income_personal_monthly",
+        "label": "월소득(개인)"
+      },
+      {
+        "field": "region_major",
+        "label": "거주 지역"
+      },
+      {
+        "field": "income_household_monthly",
+        "label": "월소득(가구)"
+      },
+      {
+        "field": "education_level",
+        "label": "최종학력"
+      },
+      {
+        "field": "travel_planning_style",
+        "label": "여행 스타일"
+      },
+      {
+        "field": "job_title_raw",
+        "label": "직업"
+      },
+      {
+        "field": "gender",
+        "label": "성별"
+      },
+      {
+        "field": "birth_year",
+        "label": "연령대"
+      }
+    ],
+    "q": "소득 높은 여행 좋아하는 사람"
+  },
+  {
+    "cls": {},
+    "out": [
+      {
+        "field": "region_major",
+        "label": "거주 지역"
+      },
+      {
+        "field": "gender",
+        "label": "성별"
+      },
+      {
+        "field": "birth_year",
+        "label": "연령대"
+      }
+    ],
+    "q": ""
+  }
+]

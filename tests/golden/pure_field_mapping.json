@@ -1,0 +1,163 @@
+{
+  "mapping": {
+    "OTT": {
+      "description": "여러분이 현재 이용 중인 OTT 서비스는 몇 개인가요?",
+      "field": "ott_count",
+      "type": "qpoll"
+    },
+    "남성": {
+      "description": "성별",
+      "field": "gender",
+      "type": "filter"
+    },
+    "반려동물": {
+      "description": "여러분은 반려동물을 키우는 중이시거나 혹은 키워보신 적이 있으신가요?",
+      "field": "pet_experience",
+      "type": "qpoll"
+    },
+    "소득": {
+      "description": "소득",
+      "field": "unknown",
+      "type": "unknown"
+    },
+    "스트레스": {
+      "description": "스트레스",
+      "field": "unknown",
+      "type": "unknown"
+    },
+    "없는키워드": {
+      "description": "없는키워드",
+      "field": "unknown",
+      "type": "unknown"
+    },
+    "여자": {
+      "description": "성별",
+      "field": "gender",
+      "type": "filter"
+    },
+    "자동차": {
+      "description": "자동차",
+      "field": "unknown",
+      "type": "unknown"
+    },
+    "흡연": {
+      "description": "흡연 여부",
+      "field": "smoking_experience",
+      "type": "filter"
+    }
+  },
+  "negative": {
+    "ott_count": [
+      "해\\s*당\\s*사\\s*항\\s*없\\s*음",
+      "경\\s*험\\s*없\\s*음",
+      "관\\s*심\\s*없\\s*음",
+      "잘\\s*모\\s*름",
+      "모\\s*르\\s*겠",
+      "몰\\s*라",
+      "딱\\s*히\\s*없",
+      "^없\\s*음$",
+      "^없\\s*다$",
+      "^아\\s*니\\s*오$",
+      "^아\\s*님$",
+      "^0$",
+      "^0개$",
+      "^0명$",
+      "^0원$",
+      "안\\s*봄",
+      "보\\s*지\\s*않",
+      "이\\s*용\\s*하\\s*지\\s*않",
+      "이\\s*용\\s*안",
+      "구\\s*독\\s*안",
+      "없\\s*음",
+      "0\\s*개",
+      "^없\\s*음$"
+    ],
+    "pet_experience": [
+      "해\\s*당\\s*사\\s*항\\s*없\\s*음",
+      "경\\s*험\\s*없\\s*음",
+      "관\\s*심\\s*없\\s*음",
+      "잘\\s*모\\s*름",
+      "모\\s*르\\s*겠",
+      "몰\\s*라",
+      "딱\\s*히\\s*없",
+      "^없\\s*음$",
+      "^없\\s*다$",
+      "^아\\s*니\\s*오$",
+      "^아\\s*님$",
+      "^0$",
+      "^0개$",
+      "^0명$",
+      "^0원$",
+      "안\\s*키\\s*움",
+      "키\\s*우\\s*지\\s*않",
+      "비\\s*반\\s*려",
+      "없\\s*음",
+      "^없\\s*음$"
+    ],
+    "smoking_experience": [
+      "해\\s*당\\s*사\\s*항\\s*없\\s*음",
+      "경\\s*험\\s*없\\s*음",
+      "관\\s*심\\s*없\\s*음",
+      "잘\\s*모\\s*름",
+      "모\\s*르\\s*겠",
+      "몰\\s*라",
+      "딱\\s*히\\s*없",
+      "^없\\s*음$",
+      "^없\\s*다$",
+      "^아\\s*니\\s*오$",
+      "^아\\s*님$",
+      "^0$",
+      "^0개$",
+      "^0명$",
+      "^0원$",
+      "안\\s*피",
+      "피\\s*우\\s*지\\s*않",
+      "비\\s*흡\\s*연",
+      "금\\s*연",
+      "흡\\s*연\\s*안",
+      "없\\s*음"
+    ],
+    "unknown": [
+      "해\\s*당\\s*사\\s*항\\s*없\\s*음",
+      "경\\s*험\\s*없\\s*음",
+      "관\\s*심\\s*없\\s*음",
+      "잘\\s*모\\s*름",
+      "모\\s*르\\s*겠",
+      "몰\\s*라",
+      "딱\\s*히\\s*없",
+      "^없\\s*음$",
+      "^없\\s*다$",
+      "^아\\s*니\\s*오$",
+      "^아\\s*님$",
+      "^0$",
+      "^0개$",
+      "^0명$",
+      "^0원$"
+    ]
+  },
+  "related": {
+    "OTT 이용 개수": [
+      "e_cigarette_experience",
+      "fast_delivery_usage",
+      "ott_count"
+    ],
+    "여행 좋아하는 사람": [
+      "income_household_monthly",
+      "overseas_travel_pref",
+      "travel_planning_style"
+    ],
+    "자녀 있는 결혼": [
+      "children_count",
+      "family_size",
+      "marital_status"
+    ],
+    "자동차 소득": [
+      "car_manufacturer_raw",
+      "car_model_raw",
+      "education_level",
+      "income_household_monthly",
+      "income_personal_monthly",
+      "job_title_raw"
+    ]
+  }
+}
