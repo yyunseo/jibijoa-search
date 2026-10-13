@@ -7,11 +7,8 @@ from typing import List, Dict, Any, Tuple, Optional
 from fastapi import Request, Response, HTTPException
 
 from app.panels.repository import PanelRepository, VectorRepository
-from insights import (
-    get_ai_summary, 
-    analyze_search_results_optimized as analyze_search_results,
-    get_search_result_overview
-)
+from app.insights.summary import get_ai_summary, get_search_result_overview
+from app.insights.analysis import analyze_search_results_optimized as analyze_search_results
 from app.query.parser import parse_query_intelligent
 from app.core.embeddings import initialize_embeddings
 from app.search.pipeline import hybrid_search

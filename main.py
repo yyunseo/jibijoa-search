@@ -20,11 +20,8 @@ from app.search.service import perform_common_search
 from app.panels.detail import get_welcome_data, get_qpoll_data
 from app.panels.table import get_ordered_welcome_data, get_qpoll_responses_for_table
 
-from insights import (
-    get_ai_summary, 
-    analyze_search_results_optimized as analyze_search_results,
-    get_search_result_overview
-)
+from app.insights.summary import get_ai_summary, get_search_result_overview
+from app.insights.analysis import analyze_search_results_optimized as analyze_search_results
 from app.query.parser import parse_query_intelligent
 from app.panels.fields import QPOLL_FIELD_TO_TEXT
 from app.core.postgres import init_db, cleanup_db, get_db_connection_context
