@@ -5,7 +5,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from typing import Dict, Optional, List, Set
 
 from qdrant_client.http.models import Filter, FieldCondition, MatchValue, MatchAny, MatchText
-from utils import WELCOME_OBJECTIVE_FIELDS
+from app.panels.fields import WELCOME_OBJECTIVE_FIELDS
 from llm import parse_query_intelligent
 from semantic_router import router
 from search_helpers import (
@@ -13,11 +13,8 @@ from search_helpers import (
     filter_negative_conditions
 )
 from app.core.embeddings import initialize_embeddings, embed_keywords
-from mapping_rules import (
-    QPOLL_FIELD_TO_TEXT, 
-    get_negative_patterns,
-    VALUE_TRANSLATION_MAP
-)
+from mapping_rules import get_negative_patterns
+from app.panels.fields import QPOLL_FIELD_TO_TEXT, VALUE_TRANSLATION_MAP
 from app.core.qdrant import get_qdrant_client
 
 def normalize_text(text: str) -> str:

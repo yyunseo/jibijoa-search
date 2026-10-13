@@ -3,14 +3,14 @@ import importlib
 
 SYMBOLS = {
     "app": "main:app",
-    "QPOLL_FIELD_TO_TEXT": "mapping_rules:QPOLL_FIELD_TO_TEXT",
+    "QPOLL_FIELD_TO_TEXT": "app.panels.fields:QPOLL_FIELD_TO_TEXT",
     "build_sql": "search_helpers:build_sql_from_structured_filters",
-    "extract_answer_from_template": "services:extract_answer_from_template",
+    "extract_answer_from_template": "app.panels.table:extract_answer_from_template",
     "prepare_display_fields": "services:_prepare_display_fields",
     "get_negative_patterns": "mapping_rules:get_negative_patterns",
     "get_field_mapping": "mapping_rules:get_field_mapping",
     "find_related_fields": "mapping_rules:find_related_fields",
-    "get_age_group": "utils:get_age_group",
+    "get_age_group": "app.panels.age:get_age_group",
     "calculate_distribution": "utils:calculate_distribution",
     "find_top_category": "utils:find_top_category",
     "parse_query": "llm:parse_query_intelligent",

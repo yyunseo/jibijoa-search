@@ -15,11 +15,13 @@ from schemas import (
     AnalysisRequest
 )
 from services import (
-    custom_key_builder, preload_models,
-    _perform_common_search, _prepare_display_fields,
-    _get_ordered_welcome_data, _get_qpoll_responses_for_table,
-    _get_welcome_data, _get_qpoll_data
+    custom_key_builder,
+    preload_models,
+    _perform_common_search,
+    _prepare_display_fields,
 )
+from app.panels.detail import get_welcome_data, get_qpoll_data
+from app.panels.table import get_ordered_welcome_data, get_qpoll_responses_for_table
 
 from insights import (
     get_ai_summary, 
@@ -27,7 +29,7 @@ from insights import (
     get_search_result_overview
 )
 from llm import parse_query_intelligent
-from mapping_rules import QPOLL_FIELD_TO_TEXT
+from app.panels.fields import QPOLL_FIELD_TO_TEXT
 from app.core.postgres import init_db, cleanup_db, get_db_connection_context
 
 logging.basicConfig(
@@ -105,8 +107,8 @@ async def search_panels(search_query: SearchQuery):
         qpoll_fields = [f for f in field_keys if f in QPOLL_FIELD_TO_TEXT]
         
         welcome_table_data, qpoll_responses_map = await asyncio.gather(
-            _get_ordered_welcome_data(ids_to_fetch, welcome_fields),
-            _get_qpoll_responses_for_table(ids_to_fetch, qpoll_fields)
+            get_ordered_welcome_data(ids_to_fetch, welcome_fields),
+            get_qpoll_responses_for_table(ids_to_fetch, qpoll_fields)
         )
         
         table_data = []
@@ -176,8 +178,8 @@ async def search_and_analyze(request: AnalysisRequest):
         ids_to_fetch = panel_ids[:fetch_limit]
 
         welcome_table_data, qpoll_responses_map = await asyncio.gather(
-            _get_ordered_welcome_data(ids_to_fetch, fields_to_fetch=welcome_fields),
-            _get_qpoll_responses_for_table(ids_to_fetch, qpoll_fields)
+            get_ordered_welcome_data(ids_to_fetch, fields_to_fetch=welcome_fields),
+            get_qpoll_responses_for_table(ids_to_fetch, qpoll_fields)
         )
 
         table_data = []
@@ -232,7 +234,7 @@ async def debug_classify(search_query: SearchQuery):
 async def get_panel_details(panel_id: str):
     try:
         logging.info(f"⚡️ 패널 상세 정보 병렬 조회 시작 (panel_id: {panel_id})")
-        results = await asyncio.gather(_get_welcome_data(panel_id), _get_qpoll_data(panel_id), return_exceptions=True)
+        results = await asyncio.gather(get_welcome_data(panel_id), get_qpoll_data(panel_id), return_exceptions=True)
         panel_data, qpoll_data = {}, {}
         for result in results:
             if isinstance(result, HTTPException): raise result 

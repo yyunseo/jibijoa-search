@@ -3,7 +3,7 @@ import numpy as np
 import os
 from typing import List, Dict
 from sklearn.metrics.pairwise import cosine_similarity
-from utils import QPOLL_FIELDS, WELCOME_OBJECTIVE_FIELDS, FIELD_NAME_MAP
+from app.panels.fields import QPOLL_FIELDS, WELCOME_OBJECTIVE_FIELDS, FIELD_NAME_MAP
 from app.core.embeddings import initialize_embeddings
 from mapping_rules import get_field_mapping
 

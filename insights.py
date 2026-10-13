@@ -12,24 +12,20 @@ from sklearn.cluster import DBSCAN
 from llm import generate_stats_summary, generate_demographic_summary
 
 # --- Repository & Helpers ---
-from repository import PanelRepository, VectorRepository 
+from app.panels.repository import PanelRepository, VectorRepository
 from app.core.embeddings import initialize_embeddings 
-from utils import (
-    calculate_distribution,
-    find_top_category,
-    WELCOME_OBJECTIVE_FIELDS,
-    get_age_group
-)
+from utils import calculate_distribution, find_top_category
+from app.panels.age import get_age_group
+from app.panels.fields import WELCOME_OBJECTIVE_FIELDS
 
 # --- Mappings & Rules ---
-from mapping_rules import (
-    get_field_mapping, 
-    QPOLL_FIELD_TO_TEXT, 
-    QPOLL_ANSWER_TEMPLATES, 
-    VALUE_TRANSLATION_MAP, 
-    find_target_columns_dynamic,
+from mapping_rules import get_field_mapping, find_target_columns_dynamic
+from app.panels.fields import (
+    QPOLL_FIELD_TO_TEXT,
+    QPOLL_ANSWER_TEMPLATES,
+    VALUE_TRANSLATION_MAP,
     FIELD_NAME_MAP,
-    FIELD_ALIAS_MAP
+    FIELD_ALIAS_MAP,
 )
 from semantic_router import router 
 

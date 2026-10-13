@@ -10,15 +10,15 @@ from dotenv import load_dotenv
 
 from qdrant_client import QdrantClient
 from qdrant_client.http.models import Filter, FieldCondition, MatchAny, SearchParams
-from repository import PanelRepository
+from app.panels.repository import PanelRepository
 from app.core.postgres import get_db_connection_context
-from mapping_rules import (
-    CATEGORY_MAPPING, 
-    get_field_mapping,
-    FIELD_ALIAS_MAP, 
+from mapping_rules import get_field_mapping
+from app.panels.fields import (
+    CATEGORY_MAPPING,
+    FIELD_ALIAS_MAP,
     VALUE_TRANSLATION_MAP,
-    FUZZY_MATCH_FIELDS, 
-    ARRAY_FIELDS
+    FUZZY_MATCH_FIELDS,
+    ARRAY_FIELDS,
 )
 
 def build_sql_from_structured_filters(filters: List[Dict]) -> Tuple[str, List]:
