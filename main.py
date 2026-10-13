@@ -14,12 +14,9 @@ from schemas import (
     SearchQuery, 
     AnalysisRequest
 )
-from services import (
-    custom_key_builder,
-    preload_models,
-    _perform_common_search,
-    _prepare_display_fields,
-)
+from services import custom_key_builder, preload_models
+from app.search.display import prepare_display_fields
+from app.search.service import perform_common_search
 from app.panels.detail import get_welcome_data, get_qpoll_data
 from app.panels.table import get_ordered_welcome_data, get_qpoll_responses_for_table
 
@@ -90,7 +87,7 @@ async def search_panels(search_query: SearchQuery):
     try:
         start_time = time.time()
         
-        lite_response, full_panel_ids, classification = await _perform_common_search(
+        lite_response, full_panel_ids, classification = await perform_common_search(
             search_query.query, 
             search_query.search_mode,
             mode="lite"
@@ -99,7 +96,7 @@ async def search_panels(search_query: SearchQuery):
         search_time = time.time() - start_time
         logging.info(f"⏱️  [Lite 모드] 검색 완료: {search_time:.2f}초")
         
-        display_fields = _prepare_display_fields(classification, query_text=search_query.query)
+        display_fields = prepare_display_fields(classification, query_text=search_query.query)
         ids_to_fetch = lite_response.get('final_panel_ids', [])
         
         field_keys = [f['field'] for f in display_fields]
@@ -151,7 +148,7 @@ async def search_panels(search_query: SearchQuery):
 async def search_and_analyze(request: AnalysisRequest):
     logging.info(f"📊 [Pro 모드] 검색 + 분석 시작: {request.query}")
     try:
-        pro_info, panel_ids, classification = await _perform_common_search(request.query, request.search_mode, mode="pro")
+        pro_info, panel_ids, classification = await perform_common_search(request.query, request.search_mode, mode="pro")
         user_limit = classification.get('limit', 100)
 
         results = await asyncio.gather(
@@ -168,7 +165,7 @@ async def search_and_analyze(request: AnalysisRequest):
             analysis_result = analysis_result_tuple
 
         charts = analysis_result.get('charts', []) if analysis_result else []
-        display_fields = _prepare_display_fields(classification, query_text=request.query)
+        display_fields = prepare_display_fields(classification, query_text=request.query)
         
         field_keys = [f['field'] for f in display_fields]
         welcome_fields = [f for f in field_keys if f not in QPOLL_FIELD_TO_TEXT]

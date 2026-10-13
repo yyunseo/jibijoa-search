@@ -1,25 +1,16 @@
-import os
-import re
 import logging
-import threading
-from typing import List, Set, Optional, Dict, Tuple
 from datetime import datetime
-from collections import defaultdict
-from functools import lru_cache
-from dotenv import load_dotenv
+from typing import Dict, List, Set, Tuple
 
-from qdrant_client import QdrantClient
-from qdrant_client.http.models import Filter, FieldCondition, MatchAny, SearchParams
-from app.panels.repository import PanelRepository
-from app.core.postgres import get_db_connection_context
-from app.query.field_matching import get_field_mapping
 from app.panels.fields import (
+    ARRAY_FIELDS,
     CATEGORY_MAPPING,
     FIELD_ALIAS_MAP,
-    VALUE_TRANSLATION_MAP,
     FUZZY_MATCH_FIELDS,
-    ARRAY_FIELDS,
+    VALUE_TRANSLATION_MAP,
 )
+from app.panels.repository import PanelRepository
+
 
 def build_sql_from_structured_filters(filters: List[Dict]) -> Tuple[str, List]:
     """
@@ -234,65 +225,3 @@ def search_welcome_objective(
     results = PanelRepository.search_panel_ids_by_sql(where_clause, params)
     
     return results, set()
-
-def search_preference_conditions(
-    preference_keywords: List[str],
-    query_vectors: List[List[float]],
-    qdrant_client: QdrantClient,
-    collection_name: str,
-    candidate_panel_ids: Set[str],
-    threshold: float = 0.45,
-    top_k_per_keyword: int = 500
-) -> Tuple[List[tuple], List[str]]:
-    if not preference_keywords or not query_vectors or not candidate_panel_ids:
-        return ([(pid, 0.0) for pid in candidate_panel_ids], [])
-    try:
-        candidate_list = list(candidate_panel_ids)
-        qdrant_filter = Filter(must=[FieldCondition(key="panel_id", match=MatchAny(any=candidate_list))])
-        panel_scores: Dict[str, float] = {pid: 0.0 for pid in candidate_panel_ids}
-        found_categories: List[str] = []
-        for i, (keyword, vector) in enumerate(zip(preference_keywords, query_vectors)):
-            search_results = qdrant_client.search(
-                collection_name=collection_name, query_vector=vector, query_filter=qdrant_filter,
-                limit=top_k_per_keyword, with_payload=True, score_threshold=threshold
-            )
-            for result in search_results:
-                pid = result.payload.get('panel_id')
-                category = result.payload.get('category', None)
-                if not pid and 'metadata' in result.payload:
-                    pid = result.payload['metadata'].get('panel_id')
-                    if not category: category = result.payload['metadata'].get('category', None)
-                if pid and str(pid) in panel_scores:
-                    panel_scores[str(pid)] = max(panel_scores[str(pid)], result.score)
-                    if category: found_categories.append(category)
-        sorted_results = sorted(panel_scores.items(), key=lambda x: x[1], reverse=True)
-        return sorted_results, list(set(found_categories))
-    except Exception as e:
-        logging.error(f"Preference 검색 실패: {e}")
-        return ([(pid, 0.0) for pid in candidate_panel_ids], [])
-
-def filter_negative_conditions(
-    panel_ids: Set[str],
-    negative_keywords: List[str],
-    query_vectors: List[List[float]],
-    qdrant_client: QdrantClient,
-    collection_name: str,
-    threshold: float = 0.50
-) -> Set[str]:
-    if not negative_keywords or not query_vectors or not panel_ids: return panel_ids
-    try:
-        panel_ids_to_exclude = set()
-        for vector in query_vectors:
-            search_results = qdrant_client.search(
-                collection_name=collection_name, query_vector=vector, limit=5000,
-                with_payload=True, score_threshold=threshold
-            )
-            for result in search_results:
-                pid = result.payload.get('panel_id')
-                if not pid and 'metadata' in result.payload: pid = result.payload['metadata'].get('panel_id')
-                if pid: panel_ids_to_exclude.add(str(pid))
-        return panel_ids - panel_ids_to_exclude
-    except Exception as e:
-        logging.error(f"Negative 필터링 실패: {e}")
-        return panel_ids
-

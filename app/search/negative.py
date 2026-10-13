@@ -1,19 +1,7 @@
-import re
-from typing import List, Dict, Union, Tuple, Optional, Any
 import logging
-from functools import lru_cache
+from typing import List, Set
 
-
-
-
-
-
-
-
-
-
-
-
+from qdrant_client import QdrantClient
 
 
 # 2. 동적 부정어 관리 로직 (Logic)
@@ -27,6 +15,7 @@ COMMON_NEGATIVE_PATTERNS = [
     r"^아\s*니\s*오$", r"^아\s*님$",
     r"^0$", r"^0개$", r"^0명$", r"^0원$"
 ]
+
 
 SPECIFIC_NEGATIVE_PATTERNS = {
     "ott_count": [r"안\s*봄", r"보\s*지\s*않", r"이\s*용\s*하\s*지\s*않", r"이\s*용\s*안", r"구\s*독\s*안", r"없\s*음", r"0\s*개", r"^없\s*음$"],
@@ -58,6 +47,7 @@ SPECIFIC_NEGATIVE_PATTERNS = {
     "stress_relief_method": [r"^없\s*음$", r"딱\s*히\s*없"],
 }
 
+
 def get_negative_patterns(field_name: str) -> List[str]:
     patterns = COMMON_NEGATIVE_PATTERNS.copy()
     if field_name in SPECIFIC_NEGATIVE_PATTERNS:
@@ -65,3 +55,27 @@ def get_negative_patterns(field_name: str) -> List[str]:
     return patterns
 
 
+def filter_negative_conditions(
+    panel_ids: Set[str],
+    negative_keywords: List[str],
+    query_vectors: List[List[float]],
+    qdrant_client: QdrantClient,
+    collection_name: str,
+    threshold: float = 0.50
+) -> Set[str]:
+    if not negative_keywords or not query_vectors or not panel_ids: return panel_ids
+    try:
+        panel_ids_to_exclude = set()
+        for vector in query_vectors:
+            search_results = qdrant_client.search(
+                collection_name=collection_name, query_vector=vector, limit=5000,
+                with_payload=True, score_threshold=threshold
+            )
+            for result in search_results:
+                pid = result.payload.get('panel_id')
+                if not pid and 'metadata' in result.payload: pid = result.payload['metadata'].get('panel_id')
+                if pid: panel_ids_to_exclude.add(str(pid))
+        return panel_ids - panel_ids_to_exclude
+    except Exception as e:
+        logging.error(f"Negative 필터링 실패: {e}")
+        return panel_ids
