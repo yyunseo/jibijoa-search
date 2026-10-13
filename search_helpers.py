@@ -12,7 +12,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.http.models import Filter, FieldCondition, MatchAny, SearchParams
 from app.panels.repository import PanelRepository
 from app.core.postgres import get_db_connection_context
-from mapping_rules import get_field_mapping
+from app.query.field_matching import get_field_mapping
 from app.panels.fields import (
     CATEGORY_MAPPING,
     FIELD_ALIAS_MAP,

@@ -19,7 +19,7 @@ from app.panels.age import get_age_group
 from app.panels.fields import WELCOME_OBJECTIVE_FIELDS
 
 # --- Mappings & Rules ---
-from mapping_rules import get_field_mapping, find_target_columns_dynamic
+from app.query.field_matching import get_field_mapping, find_target_columns_dynamic
 from app.panels.fields import (
     QPOLL_FIELD_TO_TEXT,
     QPOLL_ANSWER_TEMPLATES,
@@ -27,7 +27,7 @@ from app.panels.fields import (
     FIELD_NAME_MAP,
     FIELD_ALIAS_MAP,
 )
-from semantic_router import router 
+from app.query.router import get_router
 
 def _clean_label(text: Any, max_length: int = 25) -> str:
     """라벨 정제 함수"""
@@ -659,7 +659,7 @@ def analyze_search_results_optimized(
             original_keyword = condition.get('original_keyword')
             if not original_keyword: continue
             
-            field_info = router.find_closest_field(original_keyword)
+            field_info = get_router().find_closest_field(original_keyword)
             if field_info:
                 found_field = field_info['field']
                 if found_field in used_fields: continue

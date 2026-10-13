@@ -6,8 +6,8 @@ from typing import Dict, Optional, List, Set
 
 from qdrant_client.http.models import Filter, FieldCondition, MatchValue, MatchAny, MatchText
 from app.panels.fields import WELCOME_OBJECTIVE_FIELDS
-from llm import parse_query_intelligent
-from semantic_router import router
+from app.query.parser import parse_query_intelligent
+from app.query.router import get_router
 from search_helpers import (
     search_welcome_objective, 
     filter_negative_conditions
@@ -171,7 +171,7 @@ def hybrid_search(query: str, limit: Optional[int] = None) -> Dict:
             intent = positive_conditions[0].get("original_keyword", "")
         
         # 2. 라우팅
-        target_field_info = router.find_closest_field(intent)
+        target_field_info = get_router().find_closest_field(intent)
         target_field = None
         target_desc = None
         if target_field_info:
@@ -186,7 +186,7 @@ def hybrid_search(query: str, limit: Optional[int] = None) -> Dict:
                 kw = cond.get('original_keyword', '')
                 if kw == intent: continue 
                 
-                alt_info = router.find_closest_field(kw)
+                alt_info = get_router().find_closest_field(kw)
                 if alt_info and alt_info['field'] in QPOLL_FIELD_TO_TEXT:
                     logging.info(f"🔄 타겟 재설정: {target_field}(인구통계) -> {alt_info['field']}(설문)로 변경")
                     target_field = alt_info['field']

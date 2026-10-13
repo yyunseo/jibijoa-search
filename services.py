@@ -12,10 +12,10 @@ from insights import (
     analyze_search_results_optimized as analyze_search_results,
     get_search_result_overview
 )
-from llm import parse_query_intelligent
+from app.query.parser import parse_query_intelligent
 from app.core.embeddings import initialize_embeddings
 from search import hybrid_search
-from mapping_rules import find_related_fields
+from app.query.field_matching import find_related_fields
 from app.panels.fields import QPOLL_FIELD_TO_TEXT, QPOLL_ANSWER_TEMPLATES, VECTOR_CATEGORY_TO_FIELD
 from app.core.postgres import get_db_connection_context
 from app.core.qdrant import get_qdrant_client
@@ -31,12 +31,12 @@ def custom_key_builder(func, namespace: str = "", *, request: Request = None, re
     return ":".join([namespace, func.__module__ + func.__name__, repr(sorted(kwargs.items()))])
 
 def preload_models():
-    from semantic_router import router
+    from app.query.router import get_router
     logging.info("="*70)
     logging.info("🔄 모든 AI 모델을 미리 로드합니다...")
     start = time.time()
     initialize_embeddings()
-    try: router.find_closest_field("테스트 쿼리")
+    try: get_router().find_closest_field("테스트 쿼리")
     except: pass
     logging.info(f"✅ 모델 로드 완료 ({time.time() - start:.2f}초)")
 

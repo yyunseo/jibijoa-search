@@ -5,7 +5,7 @@ from typing import List, Dict
 from sklearn.metrics.pairwise import cosine_similarity
 from app.panels.fields import QPOLL_FIELDS, WELCOME_OBJECTIVE_FIELDS, FIELD_NAME_MAP
 from app.core.embeddings import initialize_embeddings
-from mapping_rules import get_field_mapping
+from app.query.field_matching import get_field_mapping
 
 # 로거 설정
 logger = logging.getLogger(__name__)
@@ -98,5 +98,8 @@ class SemanticRouter:
             "method": "semantic"
         }
 
-# 싱글톤 인스턴스 생성
-router = SemanticRouter()
+
+def get_router() -> SemanticRouter:
+    # 클래스 자체가 싱글톤이라 여러 번 호출해도 같은 인스턴스를 돌려준다.
+    # import 시점에 임베딩 모델을 로드하지 않으려고 함수로 감쌌다.
+    return SemanticRouter()

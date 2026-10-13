@@ -28,7 +28,7 @@ from insights import (
     analyze_search_results_optimized as analyze_search_results,
     get_search_result_overview
 )
-from llm import parse_query_intelligent
+from app.query.parser import parse_query_intelligent
 from app.panels.fields import QPOLL_FIELD_TO_TEXT
 from app.core.postgres import init_db, cleanup_db, get_db_connection_context
 
