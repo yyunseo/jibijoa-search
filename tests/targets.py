@@ -2,7 +2,7 @@
 import importlib
 
 SYMBOLS = {
-    "app": "main:app",
+    "app": "app.main:app",
     "QPOLL_FIELD_TO_TEXT": "app.panels.fields:QPOLL_FIELD_TO_TEXT",
     "build_sql": "app.search.sql_filter:build_sql_from_structured_filters",
     "extract_answer_from_template": "app.panels.table:extract_answer_from_template",

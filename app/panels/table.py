@@ -98,3 +98,29 @@ async def get_qpoll_responses_for_table(ids_to_fetch: List[str], qpoll_fields: L
         return result_map
         
     return await asyncio.get_running_loop().run_in_executor(None, process_qpoll)
+
+
+def build_table_rows(welcome_table_data, qpoll_responses_map, welcome_fields, qpoll_fields, target_field):
+    # Lite/Pro 엔드포인트에 똑같이 복사돼 있던 행 조립 루프를 한 곳으로 모았다 (로직 변경 없음)
+    table_data = []
+    for welcome_row in welcome_table_data:
+        pid = welcome_row.get('panel_id')
+        if pid and pid in qpoll_responses_map:
+            welcome_row.update(qpoll_responses_map[pid])
+
+        is_valid_row = True
+        if target_field in qpoll_fields:
+            val = welcome_row.get(target_field)
+            if not val or str(val).strip().lower() == 'nan': is_valid_row = False
+        elif target_field in welcome_fields:
+            val = welcome_row.get(target_field)
+            if not val or str(val).strip().lower() == 'nan': is_valid_row = False
+
+        for field in (welcome_fields + qpoll_fields):
+            if field != target_field:
+                val = welcome_row.get(field)
+                if not val or str(val).strip().lower() == 'nan': welcome_row[field] = "-"
+
+        if is_valid_row:
+            table_data.append(welcome_row)
+    return table_data
