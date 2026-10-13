@@ -1,0 +1,51 @@
+{
+  "out": [
+    "p01",
+    "p08"
+  ],
+  "qdrant": [
+    {
+      "collection": "qpoll_vectors_v2",
+      "filter": [
+        {
+          "key": "panel_id",
+          "match": "MatchAny",
+          "value": {
+            "count": 2003,
+            "values": [
+              "p01",
+              "p08",
+              "x00000",
+              "x00001",
+              "x00002",
+              "x00003",
+              "x00004",
+              "x00005",
+              "x00006",
+              "x00007",
+              "x00008",
+              "x00009",
+              "x00010",
+              "x00011",
+              "x00012",
+              "x00013",
+              "x00014",
+              "x00015",
+              "x00016",
+              "x00017"
+            ]
+          }
+        },
+        {
+          "key": "question",
+          "match": "MatchText",
+          "value": "스트레스를 해소하는 방법으로 주로 사용하는 것은 무엇인가요?"
+        }
+      ],
+      "limit": 2000,
+      "offset": null,
+      "op": "scroll",
+      "with_vectors": true
+    }
+  ]
+}

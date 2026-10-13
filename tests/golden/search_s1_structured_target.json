@@ -1,0 +1,35 @@
+{
+  "prompts": [
+    "189e176274ea"
+  ],
+  "qdrant": [],
+  "result": {
+    "final_panel_ids": [
+      "p05",
+      "p01"
+    ],
+    "search_intent": "흡연",
+    "target_field": "smoking_experience",
+    "target_field_desc": "흡연 여부",
+    "total_count": 2
+  },
+  "sql": [
+    {
+      "params": [
+        "서울",
+        1997,
+        2006,
+        "M",
+        "%일반%",
+        "%전자%",
+        "%기타%",
+        "%피우고%",
+        "%피웠%",
+        "%흡연%",
+        "%연초%",
+        "%궐련%"
+      ],
+      "sql": "SELECT panel_id FROM welcome_meta2 WHERE structured_data->>'region_major' IN (%s) AND (structured_data->>'birth_year')::int BETWEEN %s AND %s AND structured_data->>'gender' IN (%s) AND (structured_data->>'smoking_experience' ILIKE %s OR structured_data->>'smoking_experience' ILIKE %s OR structured_data->>'smoking_experience' ILIKE %s OR structured_data->>'smoking_experience' ILIKE %s OR structured_data->>'smoking_experience' ILIKE %s OR structured_data->>'smoking_experience' ILIKE %s OR structured_data->>'smoking_experience' ILIKE %s OR structured_data->>'smoking_experience' ILIKE %s) AND structured_data->>'smoking_experience' !~ '피우지|않음|없음|비흡연|금연|안\\s*피움'"
+    }
+  ]
+}

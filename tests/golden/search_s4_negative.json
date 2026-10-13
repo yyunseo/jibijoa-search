@@ -1,0 +1,40 @@
+{
+  "prompts": [
+    "9a292b80c012"
+  ],
+  "qdrant": [
+    {
+      "collection": "qpoll_vectors_v2",
+      "filter": [
+        {
+          "key": "question",
+          "match": "MatchText",
+          "value": "여러분이 현재 이용 중인 OTT 서비스는 몇 개인가요?"
+        }
+      ],
+      "limit": 500,
+      "op": "search",
+      "score_threshold": null
+    },
+    {
+      "collection": "qpoll_vectors_v2",
+      "filter": [],
+      "limit": 5000,
+      "op": "search",
+      "score_threshold": 0.55
+    }
+  ],
+  "result": {
+    "final_panel_ids": [
+      "p03",
+      "p02",
+      "p06",
+      "p08"
+    ],
+    "search_intent": "OTT",
+    "target_field": "ott_count",
+    "target_field_desc": "여러분이 현재 이용 중인 OTT 서비스는 몇 개인가요?",
+    "total_count": 4
+  },
+  "sql": []
+}

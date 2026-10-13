@@ -1,0 +1,28 @@
+{
+  "out": [
+    "p02",
+    "p01"
+  ],
+  "qdrant": [
+    {
+      "collection": "qpoll_vectors_v2",
+      "filter": [
+        {
+          "key": "panel_id",
+          "match": "MatchAny",
+          "value": {
+            "count": 2,
+            "values": [
+              "p01",
+              "p02"
+            ]
+          }
+        }
+      ],
+      "limit": 2000,
+      "offset": null,
+      "op": "scroll",
+      "with_vectors": true
+    }
+  ]
+}

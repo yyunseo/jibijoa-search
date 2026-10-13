@@ -1,0 +1,36 @@
+{
+  "prompts": [
+    "f3446d8006e5"
+  ],
+  "qdrant": [
+    {
+      "collection": "qpoll_vectors_v2",
+      "filter": [
+        {
+          "key": "question",
+          "match": "MatchText",
+          "value": "스트레스를 해소하는 방법으로 주로 사용하는 것은 무엇인가요?"
+        }
+      ],
+      "limit": 500,
+      "op": "search",
+      "score_threshold": null
+    }
+  ],
+  "result": {
+    "final_panel_ids": [
+      "p05",
+      "p08",
+      "p03",
+      "p07",
+      "p02",
+      "p04",
+      "p01"
+    ],
+    "search_intent": "스트레스 해소",
+    "target_field": "stress_relief_method",
+    "target_field_desc": "스트레스를 해소하는 방법으로 주로 사용하는 것은 무엇인가요?",
+    "total_count": 7
+  },
+  "sql": []
+}
