@@ -1,6 +1,7 @@
 #!/bin/bash
 : "${AWS_ACCOUNT_ID:?AWS_ACCOUNT_ID is required}" "${AWS_REGION:=ap-southeast-2}" "${ECR_REPO_NAME:=jibijoa-backend}"
 : "${DB_HOST:?DB_HOST is required}" "${QDRANT_HOST:?QDRANT_HOST is required}" "${APP_SECRET_CONFIG_NAME:=prod/backend/secrets}"
+: "${CORS_ORIGINS:?CORS_ORIGINS is required (production frontend origins, comma-separated)}"
 set -e
 echo "Starting docker container..."
 
@@ -21,6 +22,7 @@ sudo docker run -d \
   -e DB_USER="backend_user" \
   -e PORT="5432" \
   -e QDRANT_HOST="${QDRANT_HOST}" \
+  -e CORS_ORIGINS="${CORS_ORIGINS}" \
   -e QDRANT_PORT="6333" \
   -e QDRANT_COLLECTION_WELCOME_NAME="welcome_subjective_vectors" \
   -e QDRANT_COLLECTION_QPOLL_NAME="qpoll_vectors_v2" \

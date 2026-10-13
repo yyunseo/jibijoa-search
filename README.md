@@ -14,7 +14,7 @@
 
 ## 내 역할
 
-팀 프로젝트에서 **검색과 분석 로직**을 맡았다 (이 저장소 main 브랜치 기준 커밋 97개).
+팀 프로젝트에서 **검색과 분석 로직**을 맡았다 (팀 프로젝트 기간 main 브랜치 기준 커밋 81개, merge 제외 40개).
 
 - LLM 질의 파싱 프롬프트와 정형/비정형 조건 분리
 - PostgreSQL 1차 필터(JSON 조건 → SQL WHERE 절) + Qdrant 벡터 검색 + 재정렬로 이어지는 하이브리드 검색
@@ -95,9 +95,13 @@ make test   # PYTHONHASHSEED=0으로 pytest 실행
 
 ### 서버
 
-`.env.example`을 복사해서 `.env`를 만들고 값을 채운 뒤 실행한다. PostgreSQL(`welcome_meta2` 테이블)과 Qdrant(`qpoll_vectors_v2`, `welcome_subjective_vectors` 컬렉션)가 필요하다. 원본 패널 데이터는 이 저장소에 포함하지 않는다.
+PostgreSQL(`welcome_meta2` 테이블)과 Qdrant(`qpoll_vectors_v2`, `welcome_subjective_vectors` 컬렉션)가 필요하다. 원본 패널 데이터는 이 저장소에 포함하지 않는다.
+
+설정은 import 시점에 **셸 환경변수**에서 읽는다. `.env` 파일은 그보다 늦게 로드되므로 직접 실행할 때는 변수를 export해야 한다 ([`docs/known-issues.md`](docs/known-issues.md) 7번). `docker compose`는 `env_file`로 컨테이너 환경변수를 넣어 주므로 `.env`만 있으면 된다.
 
 ```bash
+cp .env.example .env            # 값 채우기
+set -a; . ./.env; set +a        # 셸 환경변수로 내보내기
 pip install -r requirements.txt
 uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
@@ -110,6 +114,8 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 | `CORS_ORIGINS` | 허용할 프론트엔드 주소 (쉼표로 구분) |
 | `APP_SECRET_CONFIG_NAME` | `DB_PASSWORD`가 없을 때 AWS Secrets Manager에서 비밀 값을 읽을 이름 |
 | `AWS_ACCOUNT_ID`, `AWS_REGION`, `ECR_REPO_NAME` | 배포 스크립트(`scripts/`, `buildspec.yml`) |
+
+CodeDeploy 훅(`scripts/install.sh`, `scripts/start.sh`)은 `AWS_ACCOUNT_ID`, `DB_HOST`, `QDRANT_HOST`, `CORS_ORIGINS`가 훅 실행 환경에 없으면 바로 실패한다. CodeDeploy는 env 파일을 자동으로 읽지 않으므로 EC2 인스턴스의 환경(예: 훅을 실행하는 사용자의 셸 프로필)에 미리 설정해야 한다. `buildspec.yml`의 `AWS_ACCOUNT_ID`는 CodeBuild 프로젝트 환경변수로 넣는다.
 
 ## 한계
 

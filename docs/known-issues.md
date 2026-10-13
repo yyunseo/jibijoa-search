@@ -44,7 +44,14 @@
 - `app/query/parser.py:174` `extract_limit_from_query`: 원본(`6a72627`)에서도 호출하는 곳이 없었다. 스펙의 삭제 목록에 없어서 남겨 두었다.
 - 참고: 예전 README가 소개한 "DBSCAN 군집화"(`_group_answers_with_vectors`)는 유일한 호출부인 `generate_dynamic_insight`가 어디서도 호출되지 않아 실제 서비스에서 실행되지 않던 코드였다. 리팩토링하면서 둘 다 삭제했다.
 
-## 7. 테스트로 보호되지 않는 영역
+## 7. 설정을 `.env`보다 먼저 읽음
+
+- **현상**: `app/core/config.py`의 `Settings`가 import 시점에 `os.environ`에서 값을 읽고, `DB_PASSWORD`가 없으면 AWS Secrets Manager를 호출한다. 그런데 `load_dotenv()`는 그 뒤에 import되는 `app/core/postgres.py`에서 처음 실행된다.
+- **위치**: `app/core/config.py:54-62`, `:69`, `app/core/postgres.py:9`
+- **영향**: `.env`에만 값을 넣고 직접 실행하면 `.env`의 `DB_HOST` 등이 무시되고, `DB_PASSWORD`가 없다고 판단해 Secrets Manager를 호출하다 기동에 실패한다. 원본(`6a72627`)부터 있던 문제다. `docker compose`는 `env_file`로 컨테이너 환경변수를 넣어서 영향이 없다.
+- **처리 계획**: `config.py` 맨 앞에서 `load_dotenv()`를 호출한다.
+
+## 8. 테스트로 보호되지 않는 영역
 
 리팩토링 후 커버리지는 전체 81%다 (`pytest --cov=app`). 다음 부분은 테스트가 실행하지 않는다.
 
@@ -56,7 +63,7 @@
 | `app/panels/repository.py` | 75% | 저장소 메서드의 예외 처리 경로, `aggregate_field` |
 | `app/search/pipeline.py` | 83% | 라우팅 보정(인구통계 → 설문 필드 재설정), 범위형 소득 필터 변환 일부 |
 
-## 8. 테스트를 위해 정규화한 값
+## 9. 테스트를 위해 정규화한 값
 
 다음 값은 원래 동작 자체가 비결정적이라 golden과 비교하기 전에 정렬한다.
 

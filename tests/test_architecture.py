@@ -61,3 +61,10 @@ def test_no_panel_data_tracked():
     in_history = subprocess.run(["git", "log", "--all", "--oneline", "--", "welcome_data.json"],
                                 cwd=ROOT, capture_output=True, text=True, check=True).stdout.strip()
     assert in_history == "", in_history
+
+
+def test_deploy_script_forwards_cors_origins():
+    # 운영 origin은 CORS_ORIGINS로만 들어오므로 CodeDeploy 경로(start.sh)도 컨테이너에 전달해야 한다
+    start = (ROOT / "scripts" / "start.sh").read_text(encoding="utf-8")
+    assert '-e CORS_ORIGINS="${CORS_ORIGINS}"' in start
+    assert "${CORS_ORIGINS:?" in start
