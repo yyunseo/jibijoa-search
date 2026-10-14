@@ -1,7 +1,11 @@
 # Jibijoa — 자연어 기반 패널 검색 엔진
 
 "서울, 경기에 사는 OTT 이용하는 젊은층 30명"처럼 자연어로 질문하면, 설문 패널 데이터에서 조건에 맞는 사람을 찾아 표와 차트로 보여주는 백엔드다.
-2025년 한성대학교 프리캡스톤 팀 프로젝트로 만들었고, 2026년에 포트폴리오용으로 구조를 정리했다.
+2025년 한성대학교 프리캡스톤 팀 프로젝트다.
+
+- **하이브리드 검색**: 질문을 SQL 조건과 의미 조건으로 나눠 PostgreSQL과 Qdrant 결과를 합친다
+- **속도**: 검색 단계 87.8초 → 3.85초 (N+1 호출 제거, 필터 방식 변경, 클라이언트 재사용)
+- **리팩토링**: golden 테스트로 동작을 고정한 뒤 도메인 단위 구조로 정리, golden 변경 0회
 
 ## 문제
 
@@ -23,7 +27,7 @@
 - 검색 결과 통계, 차트, LLM 요약
 
 배포와 인프라(AWS CodeBuild/CodeDeploy, 설정, CORS)는 팀원 `dev-resetok`이, 데이터 적재 파이프라인(엑셀 → JSON → 임베딩 → Qdrant 업로드)은 팀원 `gmlcks`가 별도 저장소에서 맡았다.
-원본은 팀 저장소 `capstone-Jibijoa/backend`다. 이 저장소는 그 히스토리를 그대로 가져와서 **패널 데이터와 인프라 식별자만 모든 커밋에서 지운 것**이라 커밋 해시가 원본과 다르다.
+원본은 팀 저장소 `capstone-Jibijoa/backend`이고, 이 저장소는 그 히스토리에서 패널 데이터와 인프라 식별자를 지운 사본이다(커밋 해시는 원본과 다름).
 
 ## 구조
 
@@ -66,7 +70,7 @@ Python 3.11, FastAPI, PostgreSQL(psycopg2 커넥션 풀), Qdrant, LangChain + An
 
 **1. 속도 — 검색 단계 87.8초 → 3.85초**
 
-처음에는 API 응답이 90초 가까이 걸렸다. 로그로 단계별 시간을 나눠 보고 병목을 하나씩 걷어냈다. 수치는 당시 개인 기록(Notion) 기준이다.
+처음에는 API 응답이 90초 가까이 걸렸다. 로그로 단계별 시간을 나눠 병목을 하나씩 걷어냈다(수치는 당시 측정 기록 기준).
 
 | 병목 | 해결 | 결과 |
 |---|---|---|
@@ -78,11 +82,11 @@ Python 3.11, FastAPI, PostgreSQL(psycopg2 커넥션 풀), Qdrant, LangChain + An
 
 **2. 정확도 — Top-K를 일부 되돌린 이유**
 
-Top-K + 교집합 방식은 SQL 조건을 만족하는 사람이라도 전역 Top-K 밖에 있으면 결과에서 빠뜨렸다. 그래서 SQL 후보 전체를 가져와 재정렬하는 방식(`app/search/rerank.py`)으로 바꾸고, 후보 수 상한으로 비용을 제한했다. 속도에서 버렸던 방식을 누락을 막기 위해 다시 쓴 셈이다. 이 변경 이후의 응답 시간은 측정하지 않았다.
+Top-K + 교집합 방식은 SQL 조건을 만족하는 사람이라도 전역 Top-K 밖에 있으면 결과에서 빠뜨렸다. 그래서 SQL 후보 전체를 가져와 재정렬하는 방식(`app/search/rerank.py`)으로 바꾸고, 후보 수 상한으로 비용을 제한했다. 속도를 위해 버렸던 방식을 누락을 막기 위해 다시 쓴 셈이다.
 
 **3. 구조 — 동작을 고정한 뒤 리팩토링**
 
-포트폴리오로 정리하면서 평평하게 흩어져 있던 파일을 도메인 단위로 나눴다. 실제 DB 없이도 동작을 증명하려고, 먼저 가짜 PostgreSQL·Qdrant·LLM·임베딩으로 기존 코드의 검색 결과, 실행된 SQL, Qdrant 호출, LLM 프롬프트를 golden 파일에 기록했다. 리팩토링하는 동안 이 golden은 한 번도 바뀌지 않았다.
+평평하게 흩어져 있던 파일을 도메인 단위로 나눴다. 실제 DB 없이 동작을 증명하려고, 가짜 PostgreSQL·Qdrant·LLM·임베딩으로 기존 코드의 검색 결과, 실행 SQL, Qdrant 호출, LLM 프롬프트를 먼저 golden 파일에 기록했다. 리팩토링하는 동안 golden은 한 번도 바뀌지 않았다.
 
 ## 실행
 
@@ -95,31 +99,20 @@ make test   # PYTHONHASHSEED=0으로 pytest 실행
 
 ### 서버
 
-PostgreSQL(`welcome_meta2` 테이블)과 Qdrant(`qpoll_vectors_v2`, `welcome_subjective_vectors` 컬렉션)가 필요하다. 원본 패널 데이터는 이 저장소에 포함하지 않는다.
-
-설정은 import 시점에 **셸 환경변수**에서 읽는다. `.env` 파일은 그보다 늦게 로드되므로 직접 실행할 때는 변수를 export해야 한다 ([`docs/known-issues.md`](docs/known-issues.md) 7번). `docker compose`는 `env_file`로 컨테이너 환경변수를 넣어 주므로 `.env`만 있으면 된다.
+PostgreSQL과 Qdrant가 필요하다. 원본 패널 데이터는 이 저장소에 포함하지 않는다.
 
 ```bash
 cp .env.example .env            # 값 채우기
-set -a; . ./.env; set +a        # 셸 환경변수로 내보내기
+set -a; . ./.env; set +a        # 설정을 import 시점에 셸 환경변수에서 읽으므로 export 필요
 pip install -r requirements.txt
 uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-| 환경변수 | 용도 |
-|---|---|
-| `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` | PostgreSQL 접속 |
-| `QDRANT_HOST`, `QDRANT_PORT` | Qdrant 접속 |
-| `ANTHROPIC_API_KEY` | LLM |
-| `CORS_ORIGINS` | 허용할 프론트엔드 주소 (쉼표로 구분) |
-| `APP_SECRET_CONFIG_NAME` | `DB_PASSWORD`가 없을 때 AWS Secrets Manager에서 비밀 값을 읽을 이름 |
-| `AWS_ACCOUNT_ID`, `AWS_REGION`, `ECR_REPO_NAME` | 배포 스크립트(`scripts/`, `buildspec.yml`) |
-
-CodeDeploy 훅(`scripts/install.sh`, `scripts/start.sh`)은 `AWS_ACCOUNT_ID`, `DB_HOST`, `QDRANT_HOST`, `CORS_ORIGINS`가 훅 실행 환경에 없으면 바로 실패한다. CodeDeploy는 env 파일을 자동으로 읽지 않으므로 EC2 인스턴스의 환경(예: 훅을 실행하는 사용자의 셸 프로필)에 미리 설정해야 한다. `buildspec.yml`의 `AWS_ACCOUNT_ID`는 CodeBuild 프로젝트 환경변수로 넣는다.
+환경변수 목록과 Docker, AWS CodeBuild/CodeDeploy 배포 설정은 [`docs/deployment.md`](docs/deployment.md)에 있다.
 
 ## 한계
 
 - 정확도 개선(재정렬 도입) 이후의 응답 시간은 측정하지 않았다.
 - 남은 병목은 LLM 질의 파싱과 CPU 임베딩이다.
-- 리팩토링 중에 발견했지만 동작 보존을 위해 고치지 않은 문제(검색 결과 순서가 해시 시드에 따라 달라짐, Qdrant 클라이언트를 매번 새로 만듦 등)는 [`docs/known-issues.md`](docs/known-issues.md)에 정리했다.
-- 테스트는 가짜 의존성 기반이라 실제 DB 동작 차이는 잡지 못한다. 그래서 이번 리팩토링은 동작을 바꾸지 않는 변경으로만 한정했다.
+- 테스트는 가짜 의존성 기반이라 실제 DB 동작 차이는 잡지 못한다. 그래서 리팩토링은 동작을 바꾸지 않는 변경으로만 한정했다.
+- 리팩토링 중 발견했지만 동작 보존을 위해 고치지 않은 문제(결과 순서가 해시 시드에 따라 달라짐, Qdrant 클라이언트를 매번 새로 만듦 등)는 [`docs/known-issues.md`](docs/known-issues.md)에 정리했다.
